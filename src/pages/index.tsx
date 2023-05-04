@@ -10,7 +10,6 @@ const inter = Inter({ subsets: ['latin'] })
 
 const Home = ({animeList}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const selectedAnime = undefined;
-  // const animeList = [];
   const toggleAnimeWatched = () => {}
   const toggleAnimeWatchlist = () => {}
   const handleNextAnime = () => {}

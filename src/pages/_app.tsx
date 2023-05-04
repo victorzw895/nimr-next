@@ -4,9 +4,13 @@ import { AppProvider } from '@/context/AppContext';
 import Layout from '@/layout/Layout';
 
 export default function App({ Component, pageProps }: AppProps) {
+  const value = {
+    animeList: pageProps.animeList
+  }
+
   return (
     <Layout>
-      <AppProvider>
+      <AppProvider value={value}>
         <Component {...pageProps} />
       </AppProvider>
     </Layout>
