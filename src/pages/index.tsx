@@ -3,7 +3,8 @@ import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { Inter } from 'next/font/google'
 import Layout from '@/layout/Layout';
 import List from '@/components/List';
-import { Anime } from '@/types/Anime';
+import { AnimesByYear } from '@/types/Anime';
+import { getAnimeList } from '@/lib/api';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,7 +33,8 @@ const Home = ({animeList}: InferGetStaticPropsType<typeof getStaticProps>) => {
 export default Home;
 
 export const getStaticProps: GetStaticProps = async () => {
-  const animeList: Anime[] = [];
+  const animeList: AnimesByYear = await getAnimeList();
+
   return {
     props: {
       animeList
