@@ -1,7 +1,7 @@
 // import { Droppable, useDragDropContext } from "@thisbeyond/solid-dnd";
 // import { Dynamic } from 'solid-js/web';  
 import { ReactNode, FC, useState, Dispatch, SetStateAction } from 'react';
-import { DndContext, closestCenter, DragStartEvent, DroppableContainer, Active } from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent, DroppableContainer, Active } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 // import {
@@ -119,31 +119,32 @@ const withSortableList = <
     //   }
     // }
   
-    // const onDragEnd = ({ draggable, droppable }: { draggable: DraggableNode, droppable: DroppableContainer }) => {
-    //   if (draggable && droppable) {
-    //     const currentItems = sortableList;
-    //     const fromIndex = ids().indexOf(Number(draggable.id));
-    //     const toIndex = ids().indexOf(Number(droppable.id));
-    //     if (fromIndex !== toIndex) {
-    //       const updatedItems = currentItems.slice();
-    //       updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-    //       const updatedItemRanks = updatedItems.map((item, index) => ({
-    //         ...item,
-    //         rank: index + 1
-    //       }))
+    const onDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (active && over) {
+        const currentItems = sortableList;
+        const fromIndex = ids().indexOf(Number(active.id));
+        const toIndex = ids().indexOf(Number(over.id));
+        if (fromIndex !== toIndex) {
+          const updatedItems = currentItems.slice();
+          updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
+          const updatedItemRanks = updatedItems.map((item, index) => ({
+            ...item,
+            rank: index + 1
+          }))
           
-    //       setUpdatedValues(updatedItemRanks.filter((_, index) => {
-    //         if (fromIndex < toIndex) {
-    //           return index >= fromIndex && index <= toIndex
-    //         }
-    //         else {
-    //           return index >= toIndex && index <= fromIndex
-    //         }
-    //       }))
-    //       setSortableList(updatedItemRanks);
-    //     }
-    //   }
-    // };
+          setUpdatedValues(updatedItemRanks.filter((_, index) => {
+            if (fromIndex < toIndex) {
+              return index >= fromIndex && index <= toIndex
+            }
+            else {
+              return index >= toIndex && index <= fromIndex
+            }
+          }))
+          setSortableList(updatedItemRanks);
+        }
+      }
+    };
   
     return (
       <SortableComponent 
@@ -155,7 +156,7 @@ const withSortableList = <
           (SortableItem) => (
             <DndContext
               onDragStart={onDragStart}
-              // onDragEnd={onDragEnd}
+              onDragEnd={onDragEnd}
               // onDragOver={onDragOver}
               collisionDetection={closestCenter}
             >

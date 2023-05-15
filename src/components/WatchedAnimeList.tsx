@@ -35,7 +35,9 @@ const SortableCard = (props: DraggableItemProps<Anime>) => {
 
 const WatchedList = (props: SortableListProps<Anime>) => {
   useEffect(() => {
-    upsertAnime(props.updatedValues)
+    (async() => {
+      upsertAnime(props.updatedValues)
+    })()
   }, [props.updatedValues])
 
   return (
