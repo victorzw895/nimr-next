@@ -8,7 +8,7 @@ interface LayoutProps {
 const Layout: FunctionComponent<LayoutProps> = ({children}) => {
   return (
     <>
-      <p className="text-2xl text-lightest text-center py-10 ">App</p>
+      <p className="text-2xl text-lightest text-center pt-10 pb-5 grow-0">App</p>
       {children}
     </>
   )

@@ -2,7 +2,7 @@ import { supabase } from './supabaseClient';
 import { Anime, AnimesByYear } from '@/types/Anime';
 
 const fetchAnimes = async ({limit, offset, year} = {limit: 20, offset: 0, year: 2000}) => {
-  const response = await fetch(`${process.env.ANIME_API}?page[limit]=${limit}&page[offset]=${offset}&filter[season_year]=${year}&sort=createdAt`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_ANIME_API}?page[limit]=${limit}&page[offset]=${offset}&filter[season_year]=${year}&sort=createdAt`);
   return await response.json();
 }
 
@@ -23,11 +23,10 @@ const getAnimesByYear = async (year: number) => {
   return data as Anime[];
 }
 
-const getAllAnimes = async () => {
-  const dbSeasonYears = await getSeasonYears() || [];
-  const animes = await Promise.all(dbSeasonYears.map(async (year) => await getAnimesByYear(year)))
+const getAllAnimes = async (seasonYears: number[]) => {
+  const animes = await Promise.all(seasonYears.map(async (year) => await getAnimesByYear(year)))
 
-  const animesByYear: {[x: string]: Anime[]} = dbSeasonYears.reduce((acc, year, index) => ({
+  const animesByYear: {[x: string]: Anime[]} = seasonYears.reduce((acc, year, index) => ({
       ...acc,
       [year.toString()]: animes[index]
   }), {})
@@ -35,21 +34,32 @@ const getAllAnimes = async () => {
   return animesByYear;
 }
 
-const getAnimeList = async () => {
+const getAnimeList = async (seasonYears: number[]) => {
   let data: AnimesByYear;
-  const dbAnimes = await getAllAnimes();
+  const dbAnimes = await getAllAnimes(seasonYears);
 
   if (dbAnimes && Object.keys(dbAnimes).length) {
       data = dbAnimes
   }
   else {
       const { data: fetchInitialAnimesData }: {data: Partial<Anime>[]} = await fetchAnimes()
-
+      
       data = {
           '2000': fetchInitialAnimesData.map(anime => 
               ({
                   id: anime.id,
-                  attributes: anime.attributes,
+                  attributes: {
+                    startDate: anime.attributes?.startDate,
+                    description: anime.attributes?.description,
+                    posterImage: {
+                      small: anime.attributes?.posterImage.small,
+                    },
+                    titles: {
+                      en: anime.attributes?.titles.en,
+                      en_jp: anime.attributes?.titles.en_jp,
+                    },
+                    ageRatingGuide: anime.attributes?.ageRatingGuide,
+                  },
                   rank: null,
                   stars: 0,
                   isWatched: false,
@@ -61,6 +71,7 @@ const getAnimeList = async () => {
       insertAnime(data['2000'])
   };
 
+  // return {'2000': [data['2000'][0]]};
   return data;
 }
 

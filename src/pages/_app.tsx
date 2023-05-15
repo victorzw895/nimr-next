@@ -5,7 +5,7 @@ import Layout from '@/layout/Layout';
 
 export default function App({ Component, pageProps }: AppProps) {
   const value = {
-    animeList: pageProps.animeList
+    seasonYears: pageProps.seasonYears,
   }
 
   return (

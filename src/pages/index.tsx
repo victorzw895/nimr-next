@@ -4,19 +4,36 @@ import { Inter } from 'next/font/google'
 import Layout from '@/layout/Layout';
 import List from '@/components/List';
 import { AnimesByYear } from '@/types/Anime';
-import { getAnimeList } from '@/lib/api';
+import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
+import { useAppDispatch } from "@/context/AppContext";
+import { useEffect } from 'react';
+import SortableWatchedAnimeList from '@/components/WatchedAnimeList';
 
 const inter = Inter({ subsets: ['latin'] })
 
-const Home = ({animeList}: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home = ({seasonYears}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { setAnimeList, setAnimeRankedList, setAnimeWatchList } = useAppDispatch();
   const selectedAnime = undefined;
   const toggleAnimeWatched = () => {}
   const toggleAnimeWatchlist = () => {}
   const handleNextAnime = () => {}
 
+  useEffect(() => {
+    (async () => {
+      const animeList: AnimesByYear = await getAnimeList(seasonYears);
+      setAnimeList(animeList)
+
+      const rankedAnimeList = await getAnimeRankedList()
+      setAnimeRankedList(rankedAnimeList)
+      
+      const watchAnimeList = await getAnimeWatchList()
+      setAnimeWatchList(watchAnimeList)
+    })()
+  }, [])
+
   return (
-    <main className={`grid ${!!selectedAnime ? 'grid-cols-4' : 'grid-cols-2'} gap-6 items-start h-full mx-6 ${inter.className}`}>
-      <List animeList={animeList} />
+    <main className={`grid ${!!selectedAnime ? 'grid-cols-4' : 'grid-cols-2'} gap-6 items-stretch h-full mx-6 ${inter.className}`}>
+      <List />
       {/* {!!selectedAnime && 
         <Preview
           animeWatched={toggleAnimeWatched}
@@ -24,7 +41,8 @@ const Home = ({animeList}: InferGetStaticPropsType<typeof getStaticProps>) => {
           nextAnime={handleNextAnime}
         />
       }
-      <SortableWatchedAnimeList /> */}
+      */}
+      <SortableWatchedAnimeList /> 
     </main>
   )
 }
@@ -32,11 +50,11 @@ const Home = ({animeList}: InferGetStaticPropsType<typeof getStaticProps>) => {
 export default Home;
 
 export const getStaticProps: GetStaticProps = async () => {
-  const animeList: AnimesByYear = await getAnimeList();
+  const seasonYears: number[] = await getSeasonYears() || [];
 
   return {
     props: {
-      animeList
+      seasonYears,
     },
     revalidate: 1
   }

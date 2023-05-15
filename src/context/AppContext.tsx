@@ -8,8 +8,14 @@ interface AppContextProps {
   setFocusAnimeId: Dispatch<SetStateAction<number | undefined>>
   selectedAnime: Anime | Partial<Anime> | null
   setSelectedAnime: Dispatch<SetStateAction<Anime | Partial<Anime> | null>>
-  animeList: AnimesByYear,
-  setAnimeList: Dispatch<SetStateAction<AnimesByYear>>
+  animeList: AnimesByYear | null
+  setAnimeList: Dispatch<SetStateAction<AnimesByYear | null>>
+  animeRankedList: Anime[]
+  setAnimeRankedList: Dispatch<SetStateAction<Anime[]>>
+  animeWatchList: Anime[]
+  setAnimeWatchList: Dispatch<SetStateAction<Anime[]>>
+  seasonYears: number[],
+  setSeasonYears: Dispatch<SetStateAction<number[]>>,
 }
 
 export const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -17,14 +23,17 @@ export const AppContext = createContext<AppContextProps | undefined>(undefined);
 interface AppProviderProps {
   children: ReactNode,
   value: {
-    animeList: AnimesByYear
+    seasonYears: number[]
   }
 }
 
-const AppProvider: FC<AppProviderProps> = ({ children, value: { animeList: animeListValue } }) => {
+const AppProvider: FC<AppProviderProps> = ({ children, value: { seasonYears: seasonYearsValue } }) => {
   const [focusAnimeId, setFocusAnimeId] = useState<number>();
   const [selectedAnime, setSelectedAnime] = useState<Anime | Partial<Anime> | null>(null);
-  const [animeList, setAnimeList] = useState<AnimesByYear>(animeListValue);
+  const [animeRankedList, setAnimeRankedList] = useState<Anime[]>([]);
+  const [animeWatchList, setAnimeWatchList] = useState<Anime[]>([]);
+  const [animeList, setAnimeList] = useState<AnimesByYear | null>(null);
+  const [seasonYears, setSeasonYears] = useState<number[]>(seasonYearsValue);
 
   return (
     <AppContext.Provider value={
@@ -35,6 +44,12 @@ const AppProvider: FC<AppProviderProps> = ({ children, value: { animeList: anime
         setSelectedAnime,
         animeList,
         setAnimeList,
+        animeRankedList,
+        setAnimeRankedList,
+        animeWatchList,
+        setAnimeWatchList,
+        seasonYears,
+        setSeasonYears,
       }
     }>
       {children}
