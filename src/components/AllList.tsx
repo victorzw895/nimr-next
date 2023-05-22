@@ -2,12 +2,13 @@ import { FunctionComponent, useRef, useEffect, useState } from "react";
 import useSeasons from '@/hooks/useSeasons';
 import { useAppDispatch } from "@/context/AppContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
-import List from "./List";
+import LazyScroll from "@/utils/LazyScroll";
 import { getAnimesByYear } from '@/lib/api';
 import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
 import Card from './Card';
 import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import UseCards from '@/components/Cards';
+import List from './List';
 
 const AllList: FunctionComponent = () => {
   const [ showAll, setShowAll ] = useState(false);
@@ -85,14 +86,23 @@ const AllList: FunctionComponent = () => {
                   {year}
                 </div>
                 <div id={`main-list-${year}`} data-testid='anime-list' className="list space-y-1 overflow-y-scroll scrollbar-hide collapse-content p-0 bg-light">
-                  <List
+                <List 
+                  sortable={false}
+                  showRank={false}
+                  lazyScroll={true}
+                  scrollableTarget={`main-list-${year}`}
+                  list={getList(year)}
+                  setList={() => {}}
+                  loadMore={() => fetchFromApi ? getMoreAnime(setHasMore) : loadMore(year)}
+                  hasMore={hasMore[year.toString()]}
+                />
+                  {/* <LazyScroll
                     scrollableTarget={`main-list-${year}`}
                     list={getList(year)}
                     loadMore={() => fetchFromApi ? getMoreAnime(setHasMore) : loadMore(year)}
                     hasMore={hasMore[year.toString()]}
                   >
-                    <UseCards list={getList(year)} sortable={false} showRank={false} />
-                    {/* {
+                    {
                       getList(year).map(anime => 
                         <Card
                           key={anime.id}
@@ -100,7 +110,7 @@ const AllList: FunctionComponent = () => {
                           selectAnime={() => {
                             setSelectedAnime((currentAnime) => {
                               if (!!currentAnime && currentAnime.id === anime.id) return null;
-
+              
                               return anime;
                             })
                           }}
@@ -110,9 +120,9 @@ const AllList: FunctionComponent = () => {
                           rank={null}
                           stars={null}
                         />
-                      )  
-                    } */}
-                  </List>
+                      )
+                    }
+                  </LazyScroll> */}
                 </div>
               </div>
             )

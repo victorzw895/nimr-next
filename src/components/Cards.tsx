@@ -14,6 +14,7 @@ import { CSS } from '@dnd-kit/utilities';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
+import { SortableItem } from '@/utils/Sortable';
 
 interface SortableProps {
   // item: {
@@ -21,10 +22,6 @@ interface SortableProps {
   // },
   id: number,
   children: ReactNode
-}
-
-interface SortableItem {
-  id: number,
 }
 
 export interface DraggableItemProps<T> {
@@ -61,25 +58,25 @@ const SortableCard = (props: DraggableItemProps<Anime>) => {
   )
 }
 
-const Sortable: FC<SortableProps> = (props) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({id: props.id}); 
+// const Sortable: FC<SortableProps> = (props) => {
+//   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({id: props.id}); 
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
+//   const style = {
+//     transform: CSS.Transform.toString(transform),
+//     transition
+//   }
 
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      {props.children}
-    </div>
-  );
-};
+//   return (
+//     <div
+//       ref={setNodeRef}
+//       style={style}
+//       {...attributes}
+//       {...listeners}
+//     >
+//       {props.children}
+//     </div>
+//   );
+// };
 
 interface SortableWrapperProps {
   condition: boolean,
@@ -105,7 +102,7 @@ const Cards = ({list, sortable = false, showRank = false}: CardsOptionsProps) =>
           <SortableWrapper
             key={anime.id}
             condition={sortable}
-            Wrapper={(children: ReactNode) => <Sortable key={anime.id} id={anime.id}>{children}</Sortable>}
+            Wrapper={(children: ReactNode) => <SortableItem key={anime.id} id={anime.id}>{children}</SortableItem>}
           >
             <Card
               key={anime.id}

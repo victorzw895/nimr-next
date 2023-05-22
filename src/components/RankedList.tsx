@@ -1,21 +1,17 @@
 import { FunctionComponent, useRef, useEffect, useState } from "react";
 import useSeasons from '@/hooks/useSeasons';
 import { useAppDispatch } from "@/context/AppContext";
-import { useAnimeListDispatch } from "@/context/AnimeListContext";
-import List from "./List";
-import { getAnimesByYear, upsertAnime } from '@/lib/api';
+import LazyScroll from "@/utils/LazyScroll";
 import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
 import { ReactNode, FC, Dispatch, SetStateAction } from 'react';
-import { DndContext, closestCenter, DragEndEvent, DroppableContainer, Active, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Anime } from '@/types/Anime';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
 import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import Card from './Card';
-import Cards from '@/components/Cards';
+import { SortableList } from '@/utils/Sortable';
+import { SortableItem } from '@/utils/Sortable';
+import List from './List';
 
 interface SortableProps {
   // item: {
@@ -67,33 +63,6 @@ const SortableCard = (props: DraggableItemProps<Anime>) => {
   )
 }
 
-const Sortable: FC<SortableProps> = (props) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({id: props.id}); 
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
-  // const sortable = createSortable(props.item.id, props.item);
-  // const [state] = useDragDropContext();
-  return (
-    <div
-      // use:sortable
-      // class="sortable"
-      // classList={{
-      //   "opacity-25": sortable.isActiveDraggable,
-      //   "transition-transform": !!state.active.draggable,
-      // }}
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      {props.children}
-    </div>
-  );
-};
 
 const RankedList: FunctionComponent = () => {
   const [ showAll, setShowAll ] = useState(false);
@@ -104,6 +73,7 @@ const RankedList: FunctionComponent = () => {
   const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
   const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
+  const { setSelectedAnime } = useSelectedAnimeDispatch();
 
   // const getList = (year: number) => {
   //   if (!animeList) return [];
@@ -143,83 +113,6 @@ const RankedList: FunctionComponent = () => {
     }))
   }
 
-  const [activeItem, setActiveItem] = useState<Anime | null>(null);
-
-    const ids = () => animeRankedList.map(item => item.id);
-
-    const onDragStart = ({active}: {active: Active}) => {
-      const draggedItem = animeRankedList.find(item => item.id === active.id)
-      setActiveItem((_) => draggedItem || null)
-    };
-  
-    // const onDragOver = ({ draggable, droppable }: { draggable: DragStartEvent, droppable: DroppableContainer }) => {
-    //   if (draggable && droppable) {
-    //     // const currentItems = animeRankedList;
-    //     // const fromIndex = ids().indexOf(Number(draggable.id));
-    //     const toIndex = ids().indexOf(Number(droppable.id));
-    //     // if (cardRef) {
-    //     //   cardRef.scrollIntoView({
-    //     //     behavior: 'smooth',
-    //     //     block: 'start',
-    //     //   })
-    //     // }
-  
-    //     // TODO update all cards ranks as active draggable
-    //     // const updatedItems = currentItems.slice();
-    //     // updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-    //     // const updatedItemRanks = updatedItems.map((anime, index) => ({
-    //     //   ...anime,
-    //     //   rank: index + 1
-    //     // }))
-  
-    //     // setAnimeRankedList(updatedItemRanks);
-  
-    //     const draggedItem = animeRankedList.find(item => item.id === draggable.id)
-    //     setActiveItem((_) => draggedItem ? ({
-    //       ...draggedItem,
-    //       rank: toIndex + 1
-    //     }) : null)
-    //   }
-    // }
-  
-    const onDragEnd = (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (active && over) {
-        const currentItems = animeRankedList;
-        const fromIndex = ids().indexOf(Number(active.id));
-        const toIndex = ids().indexOf(Number(over.id));
-        if (fromIndex !== toIndex) {
-          const updatedItems = currentItems.slice();
-          updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
-          const updatedItemRanks = updatedItems.map((item, index) => ({
-            ...item,
-            rank: index + 1
-          }))
-
-          const changedValues = updatedItemRanks.filter((_, index) => {
-            if (fromIndex < toIndex) {
-              return index >= fromIndex && index <= toIndex
-            }
-            else {
-              return index >= toIndex && index <= fromIndex
-            }
-          })
-          
-          upsertAnime(changedValues)
-          // updateDb(changedValues)
-          setAnimeRankedList((_) => updatedItemRanks);
-        }
-      }
-    };
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  )
-
   return (
     <section className='col-span-1 bg-darkest rounded shadow-lg shadow-darkest'>
       <div className='box-border pt-3 px-3 h-full'>
@@ -230,36 +123,47 @@ const RankedList: FunctionComponent = () => {
           <button className={`tab tab-lifted font-bold ${!showAll ? 'tab-active' : ''}`} onClick={() => setShowAll(false)}>Unwatched</button>
         </div>
         <div id='ranked-list' className='list space-y-1 max-h-[37rem] overflow-y-scroll scrollbar-hide bg-light rounded-b-lg min-h-[38rem] pb-4'>
-          <DndContext
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            // onDragOver={onDragOver}
-            collisionDetection={closestCenter}
-            sensors={sensors}
-          >
-            <SortableContext
-              items={ids()}
-              strategy={verticalListSortingStrategy}
+          <List 
+            sortable={true}
+            showRank={true}
+            lazyScroll={true}
+            scrollableTarget='ranked-list'
+            list={animeRankedList}
+            setList={setAnimeRankedList}
+            loadMore={loadMore}
+            hasMore={hasMore.ranked}
+          />
+          {/* <SortableList list={animeRankedList} setList={setAnimeRankedList}>
+            <LazyScroll
+              scrollableTarget='ranked-list'
+              list={animeRankedList}
+              loadMore={loadMore}
+              hasMore={hasMore.ranked}
             >
-              <List
-                scrollableTarget='ranked-list'
-                list={animeRankedList}
-                loadMore={loadMore}
-                hasMore={hasMore.ranked}
-              >
-                <Cards list={animeRankedList} sortable={true} showRank={true} />
-
-                {/* {animeRankedList.map(item => 
-                  <Sortable
-                    key={item.id}
-                    id={item.id}
-                  >
-                    <SortableCard item={item} />
-                  </Sortable>
-                )} */}
-              </List>
-            </SortableContext>
-          </DndContext>
+              {
+                animeRankedList.map(anime => 
+                  <SortableItem key={anime.id} id={anime.id}>
+                    <Card
+                      key={anime.id}
+                      id={anime.id}
+                      selectAnime={() => {
+                        setSelectedAnime((currentAnime) => {
+                          if (!!currentAnime && currentAnime.id === anime.id) return null;
+          
+                          return anime;
+                        })
+                      }}
+                      japName={anime.attributes.titles.en_jp} 
+                      engName={anime.attributes.titles.en}
+                      poster={anime.attributes.posterImage?.tiny}
+                      rank={anime.rank}
+                      stars={anime.stars}
+                    />
+                  </SortableItem>
+                )
+              }
+            </LazyScroll>
+          </SortableList> */}
         </div>
       </div>
     </section>
