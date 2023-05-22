@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, FC, ReactNode, Dispatch, SetStateAction } from "react";
+import { createContext, useContext, useState, FC, ReactNode, Dispatch, SetStateAction, useEffect } from "react";
 import { Anime, AnimesByYear } from '@/types/Anime';
 
 const DummyDB = [];
@@ -6,14 +6,6 @@ const DummyDB = [];
 interface AppContextProps {
   focusAnimeId: number | undefined,
   setFocusAnimeId: Dispatch<SetStateAction<number | undefined>>
-  selectedAnime: Anime | Partial<Anime> | null
-  setSelectedAnime: Dispatch<SetStateAction<Anime | Partial<Anime> | null>>
-  animeList: AnimesByYear | null
-  setAnimeList: Dispatch<SetStateAction<AnimesByYear | null>>
-  animeRankedList: Anime[]
-  setAnimeRankedList: Dispatch<SetStateAction<Anime[]>>
-  animeWatchList: Anime[]
-  setAnimeWatchList: Dispatch<SetStateAction<Anime[]>>
   seasonYears: number[],
   setSeasonYears: Dispatch<SetStateAction<number[]>>,
 }
@@ -28,11 +20,7 @@ interface AppProviderProps {
 }
 
 const AppProvider: FC<AppProviderProps> = ({ children, value: { seasonYears: seasonYearsValue } }) => {
-  const [focusAnimeId, setFocusAnimeId] = useState<number>();
-  const [selectedAnime, setSelectedAnime] = useState<Anime | Partial<Anime> | null>(null);
-  const [animeRankedList, setAnimeRankedList] = useState<Anime[]>([]);
-  const [animeWatchList, setAnimeWatchList] = useState<Anime[]>([]);
-  const [animeList, setAnimeList] = useState<AnimesByYear | null>(null);
+  const [focusAnimeId, setFocusAnimeId] = useState<number>(); // App handleNext, Watched
   const [seasonYears, setSeasonYears] = useState<number[]>(seasonYearsValue);
 
   return (
@@ -40,14 +28,6 @@ const AppProvider: FC<AppProviderProps> = ({ children, value: { seasonYears: sea
       {
         focusAnimeId,
         setFocusAnimeId,
-        selectedAnime,
-        setSelectedAnime,
-        animeList,
-        setAnimeList,
-        animeRankedList,
-        setAnimeRankedList,
-        animeWatchList,
-        setAnimeWatchList,
         seasonYears,
         setSeasonYears,
       }

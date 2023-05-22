@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 // import { setAnimeList } from '../App';
 import {
   fetchAnimes,
@@ -8,15 +8,17 @@ import {
 import { Anime, AnimesByYear } from '@/types/Anime';
 import moment from 'moment';
 import { useAppDispatch } from '@/context/AppContext';
+import { useAnimeListDispatch } from '@/context/AnimeListContext';
 
 const useSeasons = () => {
-  const { animeList, setAnimeList, seasonYears, setSeasonYears } = useAppDispatch();
+  const { seasonYears, setSeasonYears } = useAppDispatch();
+  const { animeList, setAnimeList } = useAnimeListDispatch();
   const latestYear = () => seasonYears.slice(-1)[0];
 
-  const loadMore = async () => {
-    if (!animeList) return;
+  const getMoreAnime = async (setHasMore: Dispatch<SetStateAction<Record<string, boolean>>>) => {
     const limit = 20;
-    const latestYearAnimeList = animeList[latestYear().toString()];
+    const latestYearString = latestYear().toString()
+    const latestYearAnimeList = animeList[latestYearString];
     const offset = latestYearAnimeList && latestYearAnimeList.length ?
       latestYearAnimeList.filter(anime => anime.seasonYear === latestYear()).length
       : 0;
@@ -33,20 +35,25 @@ const useSeasons = () => {
         }))
       )) || [];
 
-      const latestYearString = latestYear().toString()
 
       if (latestYearAnimeList && latestYearAnimeList.length) {
-        setAnimeList({
-          ...animeList,
-          [latestYearString]: [...animeList[latestYearString], ...upsertAnimes]
-        })
+        setAnimeList((prevAnimeList) => ({
+          ...prevAnimeList,
+          [latestYearString]: [...prevAnimeList[latestYearString], ...upsertAnimes]
+        }))
       }
       else {
-        setAnimeList((animeByYears) => ({
-          ...animeByYears,
+        setAnimeList((prevAnimeList) => ({
+          ...prevAnimeList,
           [latestYearString]: upsertAnimes
         }))
       }
+    }
+    else {
+      setHasMore((prev) => ({
+        ...prev,
+        [latestYearString]: false
+      }));
     }
 
     if (limit + offset <= moreAnimes.meta.count) return;
@@ -55,7 +62,7 @@ const useSeasons = () => {
     setSeasonYears((years) => [...years, latestYear() + 1])
   }
 
-  return {seasonYears, setSeasonYears, loadMore}
+  return {latestYear, getMoreAnime}
 }
 
 export default useSeasons;

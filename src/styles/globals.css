@@ -36,3 +36,7 @@ body {
 body {
   overscroll-behavior: none;
 }
+
+.collapse:not(.collapse-close) input[type="checkbox"]:checked ~ .list.collapse-content {
+  max-height: 28rem;
+}

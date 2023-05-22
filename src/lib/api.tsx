@@ -1,30 +1,32 @@
 import { supabase } from './supabaseClient';
 import { Anime, AnimesByYear } from '@/types/Anime';
 
-const fetchAnimes = async ({limit, offset, year} = {limit: 20, offset: 0, year: 2000}) => {
+export const fetchAnimes = async ({limit, offset, year} = {limit: 20, offset: 0, year: 2000}) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_ANIME_API}?page[limit]=${limit}&page[offset]=${offset}&filter[season_year]=${year}&sort=createdAt`);
   return await response.json();
 }
 
-const getSeasonYears = async () => {
+export const getSeasonYears = async () => {
   let { data }: { data: number[] | null } = await supabase
       .rpc('getseasonyears')
 
   return data;
 }
 
-const getAnimesByYear = async (year: number) => {
+export const getAnimesByYear = async ({fromIndex = 0, toIndex = 10, year, limit = 10} = {fromIndex: 0, toIndex: 10, year: 2000, limit: 10}) => {
   const { data } = await supabase
       .from('AnimeList')
       .select()
       .eq('seasonYear', year)
+      .range(fromIndex, toIndex)
       .order('id', { ascending: true })
+      .limit(limit);
   
   return data as Anime[];
 }
 
 const getAllAnimes = async (seasonYears: number[]) => {
-  const animes = await Promise.all(seasonYears.map(async (year) => await getAnimesByYear(year)))
+  const animes = await Promise.all(seasonYears.map(async (year) => await getAnimesByYear({year})))
 
   const animesByYear: {[x: string]: Anime[]} = seasonYears.reduce((acc, year, index) => ({
       ...acc,
@@ -34,7 +36,7 @@ const getAllAnimes = async (seasonYears: number[]) => {
   return animesByYear;
 }
 
-const getAnimeList = async (seasonYears: number[]) => {
+export const getAnimeList = async (seasonYears: number[]) => {
   let data: AnimesByYear;
   const dbAnimes = await getAllAnimes(seasonYears);
 
@@ -71,37 +73,40 @@ const getAnimeList = async (seasonYears: number[]) => {
       insertAnime(data['2000'])
   };
 
-  // return {'2000': [data['2000'][0]]};
   return data;
 }
 
-const getAnimeRankedList = async () => {
+export const getAnimeRankedList = async ({fromIndex, toIndex, limit = 10} = {fromIndex: 0, toIndex: 10, limit: 10}) => {
   const { data } = await supabase
       .from('AnimeList')
       .select()
       .eq('isWatched', true)
-      .order('rank', { ascending: true });
+      .range(fromIndex, toIndex)
+      .order('rank', { ascending: true })
+      .limit(limit);
 
   return data as Anime[];
 }
 
-const getAnimeWatchList = async () => {
+export const getAnimeWatchList = async ({fromIndex, toIndex, limit = 10} = {fromIndex: 0, toIndex: 10, limit: 10}) => {
   const { data } = await supabase
       .from('AnimeList')
       .select()
       .eq('watchlist', true)
-      .order('rank', { ascending: true });
+      .range(fromIndex, toIndex)
+      .order('rank', { ascending: true })
+      .limit(limit);
 
   return data as Anime[];
 }
 
-const insertAnime = async (anime: Anime[]) => {
+export const insertAnime = async (anime: Anime[]) => {
   const { error } = await supabase
       .from('AnimeList')
       .insert(anime)
 }
 
-const upsertAnime = async (anime: Anime | Anime[]) => {
+export const upsertAnime = async (anime: Anime | Anime[]) => {
   const { data }: {data: Anime[] | null} = await supabase
       .from('AnimeList')
       .upsert(anime)
@@ -110,7 +115,7 @@ const upsertAnime = async (anime: Anime | Anime[]) => {
   return data;
 }
 
-const updateAnimeWatched = async (anime: Anime) => {
+export const updateAnimeWatched = async (anime: Anime) => {
   const { data }: {data: Anime | null} = await supabase
       .from('AnimeList')
       .update(anime)
@@ -119,15 +124,4 @@ const updateAnimeWatched = async (anime: Anime) => {
       .single()
   
   return data;
-}
-
-export {
-  fetchAnimes,
-  getAnimeList,
-  getAnimeRankedList,
-  getAnimeWatchList,
-  getSeasonYears,
-  insertAnime,
-  upsertAnime,
-  updateAnimeWatched
 }

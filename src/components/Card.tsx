@@ -21,13 +21,13 @@ const Card: FunctionComponent<CardProps> = (props) => {
     if (focusAnimeId === props.id) {
       cardRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'start',
+        block: 'nearest',
       })
     }
   }, [cardRef, props.id, focusAnimeId])
 
   return (
-    <div ref={cardRef} data-testid='card' className='flex items-center bg-dark' onClick={props.selectAnime}>
+    <div key={props.id} ref={cardRef} data-testid='card' className='flex items-center bg-dark' onClick={props.selectAnime}>
       {
         props.poster ?
           <Image

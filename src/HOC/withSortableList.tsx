@@ -1,9 +1,11 @@
 // import { Droppable, useDragDropContext } from "@thisbeyond/solid-dnd";
 // import { Dynamic } from 'solid-js/web';  
-import { ReactNode, FC, useState, Dispatch, SetStateAction } from 'react';
-import { DndContext, closestCenter, DragEndEvent, DroppableContainer, Active } from '@dnd-kit/core';
+import { ReactNode, FC, useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { DndContext, closestCenter, DragEndEvent, DroppableContainer, Active, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Anime } from '@/types/Anime';
+import InfiniteScroll from 'react-infinite-scroll-component';
 // import {
 //   DragDropProvider,
 //   DragDropSensors,
@@ -15,7 +17,11 @@ import { CSS } from '@dnd-kit/utilities';
 // } from "@thisbeyond/solid-dnd";
 // import { For, Show, JSXElement, Component, createSignal, ParentComponent } from "solid-js";
 // import { SetStoreFunction } from "solid-js/store";
-
+import {
+  fetchAnimes,
+  upsertAnime,
+  getSeasonYears,
+} from '@/lib/api';
 interface SortableProps {
   // item: {
   //   id: number,
@@ -63,9 +69,8 @@ export interface DraggableItemProps<T> {
 
 export interface SortableListProps<T> {
   draggableContainer: (SortableItem: FC<DraggableItemProps<T>>) => ReactNode
-  updatedValues: any[],
   showWatchList: boolean,
-  setShowWatchList: Dispatch<SetStateAction<boolean>>
+  setShowWatchList: Dispatch<SetStateAction<boolean>>,
 }
 
 const withSortableList = <
@@ -76,11 +81,12 @@ const withSortableList = <
   setSortableList: Dispatch<SetStateAction<TData[]>>,
   showWatchList: boolean,
   setShowWatchList: Dispatch<SetStateAction<boolean>>,
+  updateDb: (value: TData[] | TData) => void,
+  loadMore: () => void,
+  hasMore: boolean,
 ) => {
-  // eslint-disable-next-line react/display-name
-  return (props: Omit<SortableListProps<TData>, keyof SortableListProps<TData>>) => {
+  const HOC = (props: Omit<SortableListProps<TData>, keyof SortableListProps<TData>>) => {
     const [activeItem, setActiveItem] = useState<TData | null>(null);
-    const [updatedValues, setUpdatedValues] = useState<TData[]>([]);
 
     const ids = () => sortableList.map(item => item.id);
 
@@ -132,26 +138,35 @@ const withSortableList = <
             ...item,
             rank: index + 1
           }))
-          
-          setUpdatedValues(updatedItemRanks.filter((_, index) => {
+
+          const changedValues = updatedItemRanks.filter((_, index) => {
             if (fromIndex < toIndex) {
               return index >= fromIndex && index <= toIndex
             }
             else {
               return index >= toIndex && index <= fromIndex
             }
-          }))
-          setSortableList(updatedItemRanks);
+          })
+          
+          updateDb(changedValues)
+          setSortableList((_) => updatedItemRanks);
         }
       }
     };
+
+    const sensors = useSensors(
+      useSensor(PointerSensor, {
+        activationConstraint: {
+          distance: 8,
+        },
+      })
+    )
   
     return (
       <SortableComponent 
         {...(props as SortableListProps<TData>)}
         showWatchList={showWatchList}
         setShowWatchList={setShowWatchList}
-        updatedValues={updatedValues}
         draggableContainer={
           (SortableItem) => (
             <DndContext
@@ -159,22 +174,29 @@ const withSortableList = <
               onDragEnd={onDragEnd}
               // onDragOver={onDragOver}
               collisionDetection={closestCenter}
+              sensors={sensors}
             >
               <SortableContext
                 items={ids()}
                 strategy={verticalListSortingStrategy}
               >
-                {sortableList.map(item => 
-                <>
-                  <Sortable
-                    key={item.id}
-                    id={item.id}
-                  >
-                        <SortableItem item={item} />
-
-                  </Sortable>
-                </>
-                )}
+                <InfiniteScroll
+                  dataLength={sortableList.length}
+                  next={loadMore}
+                  hasMore={hasMore}
+                  loader={<h3> Loading...</h3>}
+                  endMessage={<h4>Nothing more to show</h4>}
+                  scrollableTarget={`favorite-list`}
+                >
+                  {sortableList.map(item => 
+                    <Sortable
+                      key={item.id}
+                      id={item.id}
+                    >
+                      <SortableItem item={item} />
+                    </Sortable>
+                  )}
+                </InfiniteScroll>
               </SortableContext>
               {/* <DragDropSensors />
               <SortableProvider ids={ids()}>
@@ -204,6 +226,8 @@ const withSortableList = <
       />
     );
   }
+
+  return HOC;
 }
 
 export default withSortableList;
