@@ -1,87 +1,58 @@
-import { FunctionComponent, ReactNode, Dispatch, SetStateAction, FC, lazy } from "react";
-import Card from './Card';
+import { ReactNode, Dispatch, SetStateAction, FC } from "react";
 import { Anime } from '@/types/Anime';
 import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import InfiniteScroll from 'react-infinite-scroll-component';
-import useSeasons from '@/hooks/useSeasons';
-import { useAppDispatch } from "@/context/AppContext";
-import LazyScroll from "@/utils/LazyScroll";
-import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
-import { useRankedListDispatch } from "@/context/RankedListContext";
-import { useWatchListDispatch } from "@/context/WatchListContext";
-import { SortableList } from '@/utils/Sortable';
-import { SortableItem } from '@/utils/Sortable';
+import LazyScroll, { LazyScrollProps } from "@/utils/LazyScroll";
+import { SortableList, SortableListProps, SortableItem, SortableItemProps } from '@/utils/Sortable';
+import Card from './Card';
 
-interface ConditionalWrapperProps {
-  condition: boolean,
-  Wrapper: FC<any>,
-  children: ReactNode,
-  [x: string]: unknown
-}
-
-
-const ConditionalWrapper = ({condition, Wrapper, children, ...restProps}: ConditionalWrapperProps) => condition ? <Wrapper {...restProps}>{children}</Wrapper> : <>{children}</>;
-
-interface WrapperProps {
-  condition: boolean,
-  children: ReactNode,
-  [x: string]: unknown
-}
-
-const SortableWrapper = ({children, ...restProps}: WrapperProps) => <ConditionalWrapper Wrapper={SortableList} {...restProps}>{children}</ConditionalWrapper>
-
-const LazyScrollWrapper = ({children, ...restProps}: WrapperProps) => <ConditionalWrapper Wrapper={LazyScroll} {...restProps}>{children}</ConditionalWrapper>
-
-// interface BaseListProps {
-//   list: Anime[],
-// }
-
-// interface SortableProps extends BaseListProps {
-//   setList: Dispatch<SetStateAction<Anime[]>>
-// }
-
-// interface LazyScrollProps extends BaseListProps {
-//   scrollableTarget: string,
-//   loadMore: () => void,
-//   hasMore: boolean,
-// }
-export interface ListProps {
+interface BaseListProps {
   list: Anime[],
-  setList: Dispatch<SetStateAction<Anime[]>>,
   sortable?: boolean,
   showRank?: boolean,
   lazyScroll?: boolean,
-  scrollableTarget?: string,
-  loadMore: () => void,
-  hasMore?: boolean,
-  // children: ReactNode,
 }
 
-const List: FunctionComponent<ListProps> = ({
+interface ConditionalWrapperProps<TWrapperProps> {
+  condition: boolean,
+  Wrapper: FC<TWrapperProps>,
+  children: ReactNode,
+}
+
+interface DynamicProps extends ConditionalWrapperProps<any> {
+  [x: string]: unknown
+}
+
+const ConditionalWrapper = ({condition, Wrapper, children, ...restProps}: DynamicProps) => condition ? <Wrapper {...restProps}>{children}</Wrapper> : <>{children}</>;
+
+type DynamicWrapperProps<TProps> = Omit<ConditionalWrapperProps<TProps>, 'Wrapper'> & {[x: string]: unknown}
+
+const SortableWrapper = ({children, ...restProps}: DynamicWrapperProps<SortableListProps>) => <ConditionalWrapper Wrapper={SortableList} {...restProps}>{children}</ConditionalWrapper>
+
+const SortableItemWrapper = ({children, ...restProps}: DynamicWrapperProps<SortableItemProps>) => <ConditionalWrapper Wrapper={SortableItem} {...restProps}>{children}</ConditionalWrapper>
+
+const LazyScrollWrapper = ({children, ...restProps}: DynamicWrapperProps<LazyScrollProps>) => <ConditionalWrapper Wrapper={LazyScroll} {...restProps}>{children}</ConditionalWrapper>
+
+type ListProps = FC<BaseListProps & {[x: string]: unknown}>
+
+const List: ListProps = ({
   list,
-  setList,
   sortable = false,
   showRank = false,
   lazyScroll = true,
-  scrollableTarget,
-  loadMore,
-  hasMore = true,
+  ...restProps
 }) => {
   const { setSelectedAnime } = useSelectedAnimeDispatch();
 
   return (
-    <SortableWrapper Wrapper={SortableList} condition={sortable} list={list} setList={setList} >
+    <SortableWrapper condition={sortable} list={list} {...restProps} >
       <LazyScrollWrapper
-        Wrapper={LazyScroll}
         condition={lazyScroll}
         list={list}
-        scrollableTarget={scrollableTarget}
-        loadMore={loadMore}
-        hasMore={hasMore}
+        {...restProps}
       >
         {
           list.map(anime => 
-            <SortableItem key={anime.id} id={anime.id}>
+            <SortableItemWrapper key={anime.id} condition={sortable} id={anime.id}>
               <Card
                 key={anime.id}
                 id={anime.id}
@@ -98,7 +69,7 @@ const List: FunctionComponent<ListProps> = ({
                 rank={showRank ? anime.rank : null}
                 stars={showRank ? anime.stars : null}
               />
-            </SortableItem>
+            </SortableItemWrapper>
           )
         }
       </LazyScrollWrapper>

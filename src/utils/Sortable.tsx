@@ -1,70 +1,13 @@
-import { FunctionComponent, useRef, useEffect, useState } from "react";
-import useSeasons from '@/hooks/useSeasons';
-import { useAppDispatch } from "@/context/AppContext";
-import { useAnimeListDispatch } from "@/context/AnimeListContext";
-import List from "@/components/List";
-import { getAnimesByYear, upsertAnime } from '@/lib/api';
-import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
-import { ReactNode, FC, Dispatch, SetStateAction } from 'react';
-import { DndContext, closestCenter, DragEndEvent, DroppableContainer, Active, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { upsertAnime } from '@/lib/api';
+import { ReactNode, FC, useState, Dispatch, SetStateAction } from 'react';
+import { DndContext, closestCenter, DragEndEvent, Active, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Anime } from '@/types/Anime';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { useRankedListDispatch } from "@/context/RankedListContext";
-import { useWatchListDispatch } from "@/context/WatchListContext";
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import Card from '@/components/Card';
-import Cards from '@/components/Cards';
 
-interface SortableItemProps {
-  // item: {
-  //   id: number,
-  // },
+export interface SortableItemProps {
   id: number,
   children: ReactNode
-}
-
-interface SortableItem {
-  id: number,
-}
-
-export interface DraggableItemProps<T> {
-  item: T,
-  overlay?: boolean
-}
-
-export interface SortableListProps<T> {
-  draggableContainer: (SortableItem: FC<DraggableItemProps<T>>) => ReactNode
-  showWatchList: boolean,
-  setShowWatchList: Dispatch<SetStateAction<boolean>>,
-}
-
-const SortableCard = (props: DraggableItemProps<Anime>) => {
-  const { setSelectedAnime } = useSelectedAnimeDispatch();
-
-  return (
-    <Card
-      key={`${props.item.id}-ranked`}
-      id={props.item.id}
-      selectAnime={() => 
-        // props.overlay ? 
-          // {}
-          // : 
-          // console.log('clicking here')
-          setSelectedAnime((currentAnime) => {
-            if (!!currentAnime && currentAnime.id === props.item.id) return null;
-
-            return props.item;
-          })
-      }
-      japName={props.item.attributes.titles.en_jp} 
-      engName={props.item.attributes.titles.en}
-      poster={props.item.attributes.posterImage?.tiny}
-      rank={props.item.rank}
-      stars={props.item.stars}
-    />
-  )
 }
 
 export const SortableItem: FC<SortableItemProps> = (props) => {
@@ -87,60 +30,13 @@ export const SortableItem: FC<SortableItemProps> = (props) => {
   );
 };
 
-interface SortableList {
+export interface SortableListProps {
   children: ReactNode,
   list: any[],
   setList: Dispatch<SetStateAction<any[]>>
 }
 
-export const SortableList: FC<SortableList> = ({children, list, setList}) => {
-  // const [ showAll, setShowAll ] = useState(false);
-  // const [ fetchFromApi, setFetchFromApi] = useState(false);
-  // const { seasonYears } = useAppDispatch();
-  // const { latestYear, getMoreAnime } = useSeasons();
-  // const [ hasMore, setHasMore ] = useState({ranked: true, watchlist: true});
-  // const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
-  // const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
-  // const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
-
-  // const getList = (year: number) => {
-  //   if (!animeList) return [];
-  //   if (showAll) {
-  //     return animeList[year.toString()] || []
-  //   }
-  //   else {
-  //     return (animeList[year.toString()] || []).filter(anime => !anime.isWatched)
-  //   }
-  // }
-
-  // const loadMore = async (listName: 'ranked' | 'watchlist' = 'ranked') => {
-  //   const list = listName === 'ranked' ? animeRankedList : animeWatchList;
-  //   const setList = listName === 'ranked' ? setAnimeRankedList : setAnimeWatchList;
-  //   const getMoreApi = listName === 'ranked' ? getAnimeRankedList : getAnimeWatchList;
-  //   const nextAnimeIndex = list.length;
-
-  //   const moreAnimes = await getMoreApi({fromIndex: nextAnimeIndex, toIndex: nextAnimeIndex + 10});
-
-  //   if (moreAnimes.length) {
-  //     setList((prevAnimeList) => ([...prevAnimeList, ...moreAnimes]))
-  //   }
-  //   else {
-  //     setHasMore((prev) => ({
-  //       ...prev,
-  //       [listName]: false
-  //     }));
-  //   }
-  // }
-
-  // const toggleCollapse = (year: number) => {
-  //   const yearString = year.toString();
-
-  //   setCollapsed((prev) => ({
-  //     ...prev,
-  //     [yearString]: !prev[yearString]
-  //   }))
-  // }
-
+export const SortableList: FC<SortableListProps> = ({children, list, setList}) => {
   const [activeItem, setActiveItem] = useState<Anime | null>(null);
 
   const ids = () => list.map(item => item.id);
@@ -231,14 +127,6 @@ export const SortableList: FC<SortableList> = ({children, list, setList}) => {
         strategy={verticalListSortingStrategy}
       >
         {children}
-        {/* <List
-          scrollableTarget='ranked-list'
-          list={list}
-          loadMore={loadMore}
-          hasMore={hasMore.ranked}
-        >
-          <Cards list={list} sortable={true} showRank={true} />
-        </List> */}
       </SortableContext>
     </DndContext>
   )

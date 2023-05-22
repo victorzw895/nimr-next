@@ -1,18 +1,10 @@
-import Image from 'next/image'
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { Inter } from 'next/font/google'
-import Layout from '@/layout/Layout';
 import AllList from '@/components/AllList';
-import { AnimesByYear } from '@/types/Anime';
-import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
-import { useAppDispatch } from "@/context/AppContext";
+import { getSeasonYears, getAnimeRankedList } from '@/lib/api';
 import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import { useAnimeListDispatch } from "@/context/AnimeListContext";
-import { useRankedListDispatch } from "@/context/RankedListContext";
-import { useWatchListDispatch } from "@/context/WatchListContext";
 import { useEffect } from 'react';
-import SortableWatchedAnimeList from '@/components/WatchedAnimeList';
-import RankedList from '@/components/RankedList';
+import ConsumedList from '@/components/ConsumedList';
 import Preview from '@/components/Preview';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -47,7 +39,7 @@ const Home = ({seasonYears}: InferGetStaticPropsType<typeof getStaticProps>) => 
         />
       }
       {/* <SortableWatchedAnimeList />  */}
-      <RankedList />
+      <ConsumedList />
     </main>
   )
 }

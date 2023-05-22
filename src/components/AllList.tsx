@@ -1,13 +1,9 @@
-import { FunctionComponent, useRef, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import useSeasons from '@/hooks/useSeasons';
 import { useAppDispatch } from "@/context/AppContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
-import LazyScroll from "@/utils/LazyScroll";
 import { getAnimesByYear } from '@/lib/api';
-import { getAnimeList, getSeasonYears, getAnimeRankedList, getAnimeWatchList, } from '@/lib/api';
-import Card from './Card';
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import UseCards from '@/components/Cards';
+import { getAnimeList } from '@/lib/api';
 import List from './List';
 
 const AllList: FunctionComponent = () => {
@@ -18,7 +14,6 @@ const AllList: FunctionComponent = () => {
   const [ hasMore, setHasMore ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: true}), {}));
   const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
   const { animeList, setAnimeList } = useAnimeListDispatch();
-  const { setSelectedAnime } = useSelectedAnimeDispatch();
 
   useEffect(() => {
     (async () => {
@@ -87,48 +82,16 @@ const AllList: FunctionComponent = () => {
                 </div>
                 <div id={`main-list-${year}`} data-testid='anime-list' className="list space-y-1 overflow-y-scroll scrollbar-hide collapse-content p-0 bg-light">
                 <List 
-                  sortable={false}
-                  showRank={false}
-                  lazyScroll={true}
-                  scrollableTarget={`main-list-${year}`}
                   list={getList(year)}
-                  setList={() => {}}
+                  scrollableTarget={`main-list-${year}`}
                   loadMore={() => fetchFromApi ? getMoreAnime(setHasMore) : loadMore(year)}
                   hasMore={hasMore[year.toString()]}
                 />
-                  {/* <LazyScroll
-                    scrollableTarget={`main-list-${year}`}
-                    list={getList(year)}
-                    loadMore={() => fetchFromApi ? getMoreAnime(setHasMore) : loadMore(year)}
-                    hasMore={hasMore[year.toString()]}
-                  >
-                    {
-                      getList(year).map(anime => 
-                        <Card
-                          key={anime.id}
-                          id={anime.id}
-                          selectAnime={() => {
-                            setSelectedAnime((currentAnime) => {
-                              if (!!currentAnime && currentAnime.id === anime.id) return null;
-              
-                              return anime;
-                            })
-                          }}
-                          japName={anime.attributes.titles.en_jp} 
-                          engName={anime.attributes.titles.en}
-                          poster={anime.attributes.posterImage?.tiny}
-                          rank={null}
-                          stars={null}
-                        />
-                      )
-                    }
-                  </LazyScroll> */}
                 </div>
               </div>
             )
           })}
         </div>
-        {/* <button className='block mx-auto my-3' onClick={() => loadMore(2000)}>Load More</button> */}
       </div>
     </section>
   )
