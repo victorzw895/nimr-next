@@ -12,15 +12,10 @@ export const WatchListContext = createContext<WatchListContextProps | undefined>
 
 interface WatchListProviderProps {
   children: ReactNode,
-  value: {
-    animeWatchList: Anime[]
-  }
 }
 
-const WatchListProvider: FC<WatchListProviderProps> = ({ children, value: { 
-  animeWatchList: animeWatchListValue
-}}) => {
-  const [animeWatchList, setAnimeWatchList] = useState<Anime[]>(animeWatchListValue);
+const WatchListProvider: FC<WatchListProviderProps> = ({ children }) => {
+  const [animeWatchList, setAnimeWatchList] = useState<Anime[]>([]);
 
   return (
     <WatchListContext.Provider value={

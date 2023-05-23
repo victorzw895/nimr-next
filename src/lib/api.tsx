@@ -88,6 +88,15 @@ export const getAnimeRankedList = async ({fromIndex, toIndex, limit = 10} = {fro
   return data as Anime[];
 }
 
+export const getRankedListCount = async () => {
+  const { count } = await supabase
+    .from('AnimeList')
+    .select('*', { count: 'exact', head: true })
+    .eq('isWatched', true);
+
+  return count ?? 0;
+}
+
 export const getAnimeWatchList = async ({fromIndex, toIndex, limit = 10} = {fromIndex: 0, toIndex: 10, limit: 10}) => {
   const { data } = await supabase
       .from('AnimeList')
@@ -99,6 +108,16 @@ export const getAnimeWatchList = async ({fromIndex, toIndex, limit = 10} = {from
 
   return data as Anime[];
 }
+
+export const getWatchListCount = async () => {
+  const { count } = await supabase
+    .from('AnimeList')
+    .select('*', { count: 'exact', head: true })
+    .eq('watchlist', true);
+
+  return count ?? 0;
+}
+
 
 export const insertAnime = async (anime: Anime[]) => {
   const { error } = await supabase

@@ -13,15 +13,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <Layout>
       <AppProvider value={{ seasonYears: pageProps.seasonYears }}>
         <SelectedAnimeProvider>
-          <AnimeListProvider value={{
-            animeList: pageProps.animeList,
-          }}>
+          <AnimeListProvider>
             <RankedListProvider value={{
               rankedAnimeList: pageProps.rankedAnimeList
             }}>
-              <WatchListProvider value={{
-                animeWatchList: pageProps.animeWatchList,
-              }}>
+              <WatchListProvider>
                 <Component {...pageProps} />
               </WatchListProvider>
             </RankedListProvider>

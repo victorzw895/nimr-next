@@ -1,63 +1,54 @@
+import { useState } from 'react';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { Inter } from 'next/font/google'
 import AllList from '@/components/AllList';
 import { getSeasonYears, getAnimeRankedList } from '@/lib/api';
 import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import { useEffect } from 'react';
-import ConsumedList from '@/components/ConsumedList';
+import InterestList from '@/components/InterestList';
 import Preview from '@/components/Preview';
+import { Anime } from '@/types/Anime'
 
 const inter = Inter({ subsets: ['latin'] })
 
 const Home = ({seasonYears}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { selectedAnime } = useSelectedAnimeDispatch();
-  const toggleAnimeWatched = () => {}
-  const toggleAnimeWatchlist = () => {}
-  const handleNextAnime = () => {}
+  const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
 
-  useEffect(() => {
-    (async () => {
-      // const animeList = await getAnimeList(seasonYears);
-      // setAnimeList(animeList)
+  const toggleCollapse = (year: number) => {
+    const yearString = year.toString();
 
-      // const rankedAnimeList = await getAnimeRankedList()
-      // setAnimeRankedList(rankedAnimeList)
-      
-      // const watchAnimeList = await getAnimeWatchList()
-      // setAnimeWatchList(watchAnimeList)
-    })()
-  }, [])
+    setCollapsed((prev) => ({
+      ...prev,
+      [yearString]: !prev[yearString]
+    }))
+  }
 
   return (
     <main className={`grid ${!!selectedAnime ? 'grid-cols-4' : 'grid-cols-2'} gap-6 items-stretch h-full mx-6 ${inter.className}`}>
-      <AllList />
+      <AllList collapsed={collapsed} toggleCollapse={toggleCollapse} />
       {!!selectedAnime && 
-        <Preview
-          animeWatched={toggleAnimeWatched}
-          toggleWatchlist={toggleAnimeWatchlist}
-          nextAnime={handleNextAnime}
-        />
+        <Preview toggleCollapse={toggleCollapse} />
       }
-      {/* <SortableWatchedAnimeList />  */}
-      <ConsumedList />
+      <InterestList />
     </main>
   )
 }
 
 export default Home;
 
-export const getStaticProps: GetStaticProps = async () => {
+interface StaticProps {
+  seasonYears: number[],
+  rankedAnimeList: Anime[],
+}
+
+export const getStaticProps: GetStaticProps<StaticProps> = async () => {
   const seasonYears: number[] = await getSeasonYears() || [];
-  // const animeList = await getAnimeList(seasonYears);
   const rankedAnimeList = await getAnimeRankedList();
-  // const animeWatchList = await getAnimeWatchList();
 
   return {
     props: {
       seasonYears,
-      animeList: {},
       rankedAnimeList,
-      animeWatchList: [],
     },
     revalidate: 1
   }

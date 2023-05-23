@@ -12,13 +12,10 @@ export const AnimeListContext = createContext<AnimeListContextProps | undefined>
 
 interface AnimeListProviderProps {
   children: ReactNode,
-  value: {
-    animeList: AnimesByYear,
-  }
 }
 
-const AnimeListProvider: FC<AnimeListProviderProps> = ({ children, value: { animeList: animeListValue }}) => {
-  const [animeList, setAnimeList] = useState<AnimesByYear>(animeListValue);
+const AnimeListProvider: FC<AnimeListProviderProps> = ({ children }) => {
+  const [animeList, setAnimeList] = useState<AnimesByYear>({});
 
   return (
     <AnimeListContext.Provider value={

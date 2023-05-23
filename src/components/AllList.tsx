@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import useSeasons from '@/hooks/useSeasons';
 import { useAppDispatch } from "@/context/AppContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
@@ -6,13 +6,17 @@ import { getAnimesByYear } from '@/lib/api';
 import { getAnimeList } from '@/lib/api';
 import List from './List';
 
-const AllList: FunctionComponent = () => {
+interface AllListProps {
+  collapsed: Record<string, boolean>,
+  toggleCollapse: (year: number) => void,
+}
+
+const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
   const [ showAll, setShowAll ] = useState(false);
   const [ fetchFromApi, setFetchFromApi] = useState(false);
   const { seasonYears } = useAppDispatch();
   const { latestYear, getMoreAnime } = useSeasons();
   const [ hasMore, setHasMore ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: true}), {}));
-  const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
   const { animeList, setAnimeList } = useAnimeListDispatch();
 
   useEffect(() => {
@@ -56,14 +60,7 @@ const AllList: FunctionComponent = () => {
     }
   }
 
-  const toggleCollapse = (year: number) => {
-    const yearString = year.toString();
-
-    setCollapsed((prev) => ({
-      ...prev,
-      [yearString]: !prev[yearString]
-    }))
-  }
+  
 
   return (
     <section className='col-span-1 bg-darkest rounded shadow-lg shadow-darkest'>

@@ -1,6 +1,5 @@
-import { FunctionComponent, useRef, useEffect } from "react";
+import { FC } from "react";
 import moment from 'moment';
-import { Anime } from '@/types/Anime';
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import Image from "next/image";
 import { useAppDispatch } from "@/context/AppContext";
@@ -9,37 +8,21 @@ import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
 import {
-  fetchAnimes,
   upsertAnime,
-  getSeasonYears,
+  getRankedListCount,
+  getWatchListCount
 } from '@/lib/api';
-export interface PreviewProps {
-  animeWatched: () => void,
-  toggleWatchlist: () => void,
-  nextAnime: () => void,
+
+interface PreviewProps {
+  toggleCollapse: (year: number) => void
 }
 
-// const handleNextAnime = () => {
-
-// }
-
-// const handlePreviousAnime = () => {
-
-// }
-
-// const handleWatchedAnime = () => {
-
-// }
-
-const Preview: FunctionComponent<PreviewProps> = (props) => {
+const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
   const { setFocusAnimeId } = useAppDispatch();
   const { selectedAnime, setSelectedAnime } = useSelectedAnimeDispatch();
   const { animeList, setAnimeList } = useAnimeListDispatch();
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
   const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
-  // const handleWatchListAnime = () => {
-  //   const selectedAnime
-  // }
 
   const handleNextAnime = () => {
     if (!selectedAnime) return;
@@ -52,7 +35,7 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
     }
     else if ((currentSeason + 1).toString() in animeList) {
       const nextAnime = animeList[(currentSeason + 1).toString()][0];
-      // toggle collapse
+      toggleCollapse(currentSeason + 1)
       setFocusAnimeId(nextAnime.id)
       setSelectedAnime(nextAnime);
     }
@@ -60,10 +43,12 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
 
   const toggleAnimeWatched = async () => {
     if (!selectedAnime) return;
+    const count = !selectedAnime.isWatched ? await getRankedListCount() + 1 : null;
+  
     const updatedAnime = {
       id: selectedAnime.id,
       attributes: selectedAnime.attributes,
-      rank: selectedAnime.isWatched ? null : animeRankedList.length + 1,
+      rank: count,
       stars: 0,
       isWatched: !selectedAnime.isWatched,
       seasonYear: selectedAnime.seasonYear,
@@ -71,19 +56,19 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
     }
 
     const upsertedAnime = (await upsertAnime(updatedAnime) || [])[0]
-    const currentSeason = updatedAnime.seasonYear;
+    const currentSeason = upsertedAnime.seasonYear;
     const currentSeasonString = currentSeason.toString();
 
     let updatedCurrentSeasonAnimeList = animeList[currentSeasonString];
     let updatedRankedList = [];
 
-    if (selectedAnime.watchlist && upsertedAnime.watchlist === false) {
+    if (selectedAnime.watchlist) {
       const updatedWatchlist = animeWatchList
         .filter(anime => anime.id !== upsertedAnime.id)
         .map((anime, index) => ({...anime, rank: index + 1}))
 
       updatedCurrentSeasonAnimeList = updatedCurrentSeasonAnimeList.map(anime => {
-        if (anime.id === updatedAnime.id) {
+        if (anime.id === upsertedAnime.id) {
           return {
             ...anime,
             watchlist: false
@@ -105,23 +90,21 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
       }
 
       updatedRankedList = [...animeRankedList, upsertedAnime]
-        // .sort((a, b) => a.rank - b.rank)
     }
     else {
       setSelectedAnime(null)
       updatedRankedList = animeRankedList
         .filter(anime => anime.id !== upsertedAnime.id)
         .map((anime, index) => ({...anime, rank: index + 1}))
-        // .sort((a, b) => a.rank - b.rank)
     }
 
     setAnimeList(prev => ({
       ...prev,
       [currentSeasonString]: updatedCurrentSeasonAnimeList.map(anime => {
-        if (anime.id === updatedAnime.id) {
+        if (anime.id === upsertedAnime.id) {
           return {
             ...anime,
-            isWatched: !anime.isWatched
+            isWatched: upsertedAnime.isWatched
           }
         }
         return anime
@@ -132,21 +115,41 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
 
   const toggleAnimeWatchlist = async () => {
     if (!selectedAnime) return;
+    const count = !selectedAnime.watchlist ? await getWatchListCount() + 1 : null;
     const updatedAnime = {
       id: selectedAnime.id,
       attributes: selectedAnime.attributes,
-      rank: selectedAnime.watchlist ? null : animeWatchList.length + 1,
+      rank: count,
       stars: 0,
-      isWatched: !!selectedAnime.watchlist,
+      isWatched: false,
       seasonYear: selectedAnime.seasonYear,
       watchlist: !selectedAnime.watchlist,
     }
 
     const upsertedAnime = (await upsertAnime(updatedAnime) || [])[0]
-    const currentSeason = updatedAnime.seasonYear;
+    const currentSeason = upsertedAnime.seasonYear;
     const currentSeasonString = currentSeason.toString();
 
+    let updatedCurrentSeasonAnimeList = animeList[currentSeasonString];
     let updatedWatchlist = [];
+
+    if (selectedAnime.isWatched) {
+      const updatedRankedlist = animeRankedList
+        .filter(anime => anime.id !== upsertedAnime.id)
+        .map((anime, index) => ({...anime, rank: index + 1}))
+
+      updatedCurrentSeasonAnimeList = updatedCurrentSeasonAnimeList.map(anime => {
+        if (anime.id === upsertedAnime.id) {
+          return {
+            ...anime,
+            isWatched: false
+          }
+        }
+        return anime
+      })
+      setAnimeRankedList(updatedRankedlist)
+    }
+
     if (upsertedAnime.watchlist) {
       updatedWatchlist = [...animeWatchList, upsertedAnime]
     }
@@ -159,12 +162,23 @@ const Preview: FunctionComponent<PreviewProps> = (props) => {
     setSelectedAnime(upsertedAnime);
     setAnimeList(prev => ({
       ...prev,
+      [currentSeasonString]: updatedCurrentSeasonAnimeList.map(anime => {
+        if (anime.id === upsertedAnime.id) {
+          return {
+            ...anime,
+            isWatched: upsertedAnime.isWatched
+          }
+        }
+        return anime
+      })
+    }))
+    setAnimeList(prev => ({
+      ...prev,
       [currentSeasonString]: animeList[currentSeasonString].map(anime => {
-        if (anime.id === updatedAnime.id) {
+        if (anime.id === upsertedAnime.id) {
           return {
             ...anime,
             watchlist: !anime.watchlist,
-            isWatched: !!anime.watchlist // TODO Check
           }
         }
         return anime
