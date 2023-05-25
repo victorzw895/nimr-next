@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import moment from 'moment';
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import Image from "next/image";
-import useSelectedAnime, { usePreview } from "@/hooks/usePreview";
+import usePreview, { useSelectedAnime } from "@/hooks/usePreview";
 
 interface PreviewProps {
   toggleCollapse: (year: number) => void

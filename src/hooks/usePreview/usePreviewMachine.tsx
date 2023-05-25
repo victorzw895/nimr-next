@@ -2,7 +2,7 @@ import { useAppDispatch } from "@/context/AppContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
-import { useActor } from "@/context/PreviewMachine";
+import { useActor } from "@/xstate-machine/PreviewMachine";
 import {
   upsertAnime,
   getRankedListCount,

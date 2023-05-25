@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/context/AppContext";
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
+import { usePreviewDispatch } from "@/context/PreviewContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
@@ -11,7 +11,7 @@ import {
 
 const usePreview = (toggleCollapse: (year: number) => void) => {
   const { setFocusAnimeId } = useAppDispatch();
-  const { selectedAnime, setSelectedAnime } = useSelectedAnimeDispatch();
+  const { selectedAnime, setSelectedAnime } = usePreviewDispatch();
   const { animeList, setAnimeList } = useAnimeListDispatch();
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
   const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
@@ -84,7 +84,7 @@ const usePreview = (toggleCollapse: (year: number) => void) => {
       updatedRankedList = [...animeRankedList, upsertedAnime]
     }
     else {
-      setSelectedAnime(null)
+      // setSelectedAnime(null)
       updatedRankedList = animeRankedList
         .filter(anime => anime.id !== upsertedAnime.id)
         .map((anime, index) => ({...anime, rank: index + 1}))

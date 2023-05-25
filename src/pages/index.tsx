@@ -6,7 +6,7 @@ import { getSeasonYears, getAnimeRankedList } from '@/lib/api';
 import InterestList from '@/components/InterestList';
 import Preview from '@/components/Preview';
 import { Anime } from '@/types/Anime'
-import useSelectedAnime from "@/hooks/usePreview";
+import { useSelectedAnime } from "@/hooks/usePreview";
 
 const inter = Inter({ subsets: ['latin'] })
 

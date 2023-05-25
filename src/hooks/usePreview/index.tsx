@@ -1,42 +1,57 @@
-import usePreviewHook from "./usePreviewHook";
+import usePreviewHook from "./usePreviewContext";
 import usePreviewMachine from "./usePreviewMachine";
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
-import { useActor } from "@/context/PreviewMachine";
+import { usePreviewDispatch, PreviewProvider as PreviewContextProvider} from "@/context/PreviewContext";
+import { useActor, PreviewProvider as PreviewMachineProvider } from "@/xstate-machine/PreviewMachine";
 import { Anime } from '@/types/Anime';
 
 const useXState = process.env.NEXT_PUBLIC_XSTATE
 
-export const usePreview = useXState ? usePreviewMachine : usePreviewHook
+const usePreview = useXState ? usePreviewMachine : usePreviewHook
 
-const useSelectedAnime = () => {
-  const { selectedAnime: hookSelectedAnime, setSelectedAnime: hookSetSelectedAnime } = useSelectedAnimeDispatch();
-  const [ state, send ] = useActor();
-  const { selectedAnime: machineSelectedAnime } = state.context
+export const PreviewProvider = useXState ? PreviewMachineProvider : PreviewContextProvider;
 
-  const selectedAnime = useXState ? machineSelectedAnime : hookSelectedAnime;
+const useSelectedAnimeHook = () => {
+  const { selectedAnime, setSelectedAnime: hookSetSelectedAnime } = usePreviewDispatch();
 
   const setSelectedAnime = (action: string, anime: Anime) => {
-    let machineParams: any
-    let hookParams: any
+    let params: any
 
     switch (action) {
       case 'TOGGLE_ANIME':
-        machineParams = {
-          type: 'TOGGLE_ANIME',
-          anime
-        }
-        hookParams = () => {
-          if (!!hookSelectedAnime && hookSelectedAnime.id === anime.id) return null;
+        params = () => {
+          if (!!selectedAnime && selectedAnime.id === anime.id) return null;
 
           return anime;
         }
     }
 
-    useXState ? send(machineParams) : hookSetSelectedAnime(hookParams())
+    hookSetSelectedAnime(params())
   };
 
   return {selectedAnime, setSelectedAnime}
 }
 
+const useSelectedAnimeMachine = () => {
+  const [ state, send ] = useActor();
+  const { selectedAnime } = state.context
 
-export default useSelectedAnime;
+  const setSelectedAnime = (action: string, anime: Anime) => {
+    let params: any
+
+    switch (action) {
+      case 'TOGGLE_ANIME':
+        params = {
+          type: 'TOGGLE_ANIME',
+          anime
+        }
+    }
+
+    send(params)
+  };
+
+  return {selectedAnime, setSelectedAnime}
+}
+
+export const useSelectedAnime = useXState ? useSelectedAnimeMachine : useSelectedAnimeHook;
+
+export default usePreview;

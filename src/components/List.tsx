@@ -3,7 +3,7 @@ import { Anime } from '@/types/Anime';
 import LazyScroll, { LazyScrollProps } from "@/utils/LazyScroll";
 import { SortableList, SortableListProps, SortableItem, SortableItemProps } from '@/utils/Sortable';
 import Card from './Card';
-import useSelectedAnime from '@/hooks/usePreview';
+import { useSelectedAnime } from '@/hooks/usePreview';
 
 interface BaseListProps {
   list: Anime[],
