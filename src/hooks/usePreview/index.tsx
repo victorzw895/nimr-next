@@ -4,16 +4,16 @@ import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import { useActor } from "@/context/PreviewMachine";
 import { Anime } from '@/types/Anime';
 
-const useStateMachine = process.env.NEXT_PUBLIC_USE_STATE_MACHINE
+const useXState = process.env.NEXT_PUBLIC_XSTATE
 
-export const usePreview = useStateMachine ? usePreviewMachine : usePreviewHook
+export const usePreview = useXState ? usePreviewMachine : usePreviewHook
 
 const useSelectedAnime = () => {
   const { selectedAnime: hookSelectedAnime, setSelectedAnime: hookSetSelectedAnime } = useSelectedAnimeDispatch();
   const [ state, send ] = useActor();
   const { selectedAnime: machineSelectedAnime } = state.context
 
-  const selectedAnime = useStateMachine ? machineSelectedAnime : hookSelectedAnime;
+  const selectedAnime = useXState ? machineSelectedAnime : hookSelectedAnime;
 
   const setSelectedAnime = (action: string, anime: Anime) => {
     let machineParams: any
@@ -32,7 +32,7 @@ const useSelectedAnime = () => {
         }
     }
 
-    useStateMachine ? send(machineParams) : hookSetSelectedAnime(hookParams())
+    useXState ? send(machineParams) : hookSetSelectedAnime(hookParams())
   };
 
   return {selectedAnime, setSelectedAnime}
