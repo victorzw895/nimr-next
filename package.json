@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev-state-machine": "NEXT_PUBLIC_USE_STATE_MACHINE=true next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

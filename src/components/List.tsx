@@ -1,10 +1,9 @@
-import { ReactNode, Dispatch, SetStateAction, FC } from "react";
+import { ReactNode, FC } from "react";
 import { Anime } from '@/types/Anime';
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import LazyScroll, { LazyScrollProps } from "@/utils/LazyScroll";
 import { SortableList, SortableListProps, SortableItem, SortableItemProps } from '@/utils/Sortable';
 import Card from './Card';
-import { useActor } from '@/context/PreviewMachine';
+import useSelectedAnime from '@/hooks/usePreview';
 
 interface BaseListProps {
   list: Anime[],
@@ -42,8 +41,7 @@ const List: ListProps = ({
   lazyScroll = true,
   ...restProps
 }) => {
-  const { setSelectedAnime } = useSelectedAnimeDispatch();
-  const [ state, send ] = useActor();
+  const { setSelectedAnime } = useSelectedAnime();
 
   return (
     <SortableWrapper condition={sortable} list={list} {...restProps} >
@@ -59,15 +57,16 @@ const List: ListProps = ({
                 key={anime.id}
                 id={anime.id}
                 selectAnime={() => {
-                  send({
-                    type: 'TOGGLE_ANIME',
-                    anime
-                  })
-                  setSelectedAnime((currentAnime) => {
-                    if (!!currentAnime && currentAnime.id === anime.id) return null;
+                  setSelectedAnime('TOGGLE_ANIME', anime);
+                  // send({
+                  //   type: 'TOGGLE_ANIME',
+                  //   anime
+                  // })
+                  // setSelectedAnime((currentAnime) => {
+                  //   if (!!currentAnime && currentAnime.id === anime.id) return null;
     
-                    return anime;
-                  })
+                  //   return anime;
+                  // })
                 }}
                 japName={anime.attributes.titles.en_jp} 
                 engName={anime.attributes.titles.en}

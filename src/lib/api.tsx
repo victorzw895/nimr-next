@@ -59,6 +59,7 @@ export const getAnimeList = async (seasonYears: number[]) => {
                     description: anime.attributes?.description,
                     posterImage: {
                       small: anime.attributes?.posterImage.small,
+                      tiny: anime.attributes?.posterImage.tiny,
                     },
                     titles: {
                       en: anime.attributes?.titles.en,
