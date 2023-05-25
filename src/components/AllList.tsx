@@ -14,7 +14,7 @@ interface AllListProps {
 const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
   const [ showAll, setShowAll ] = useState(false);
   const [ fetchFromApi, setFetchFromApi] = useState(false);
-  const { seasonYears } = useAppDispatch();
+  const { seasonYears, setSeasonYears } = useAppDispatch();
   const { latestYear, getMoreAnime } = useSeasons();
   const [ hasMore, setHasMore ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: true}), {}));
   const { animeList, setAnimeList } = useAnimeListDispatch();
@@ -23,6 +23,11 @@ const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
     (async () => {
       const animeList = await getAnimeList(seasonYears);
       setAnimeList(animeList);
+      if (!seasonYears.length) {
+        setSeasonYears([2000])
+        setFetchFromApi(true)
+        setHasMore((prev) => ({...prev, '2000': true}))
+      }
     })()
   }, [])
 
@@ -59,8 +64,6 @@ const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
       }));
     }
   }
-
-  
 
   return (
     <section className='col-span-1 bg-darkest rounded shadow-lg shadow-darkest'>

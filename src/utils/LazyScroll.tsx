@@ -1,6 +1,5 @@
 import { FunctionComponent, ReactNode } from "react";
 import { Anime } from '@/types/Anime';
-import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 export interface LazyScrollProps {
@@ -12,7 +11,6 @@ export interface LazyScrollProps {
 }
 
 const LazyScroll: FunctionComponent<LazyScrollProps> = (props) => {
-  // const { setSelectedAnime } = useSelectedAnimeDispatch();
 
   return (
     <InfiniteScroll
@@ -20,7 +18,7 @@ const LazyScroll: FunctionComponent<LazyScrollProps> = (props) => {
       next={props.loadMore}
       hasMore={props.hasMore}
       loader={<h3> Loading...</h3>}
-      endMessage={<h4>Nothing more to show</h4>}
+      // endMessage={<h4>Nothing more to show</h4>}
       scrollableTarget={props.scrollableTarget}
     >
       {props.children}

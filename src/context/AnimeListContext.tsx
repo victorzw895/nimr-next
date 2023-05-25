@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, FC, ReactNode, Dispatch, SetStateAction, useEffect } from "react";
 import { Anime, AnimesByYear } from '@/types/Anime';
 
-const DummyDB = [];
+export const DummyDBAnimes: Record<'data', Anime[]> = { data: [] };
 
 interface AnimeListContextProps {
   animeList: AnimesByYear

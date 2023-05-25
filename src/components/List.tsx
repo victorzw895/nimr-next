@@ -4,6 +4,7 @@ import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import LazyScroll, { LazyScrollProps } from "@/utils/LazyScroll";
 import { SortableList, SortableListProps, SortableItem, SortableItemProps } from '@/utils/Sortable';
 import Card from './Card';
+import { useActor } from '@/context/PreviewMachine';
 
 interface BaseListProps {
   list: Anime[],
@@ -42,6 +43,7 @@ const List: ListProps = ({
   ...restProps
 }) => {
   const { setSelectedAnime } = useSelectedAnimeDispatch();
+  const [ state, send ] = useActor();
 
   return (
     <SortableWrapper condition={sortable} list={list} {...restProps} >
@@ -57,6 +59,10 @@ const List: ListProps = ({
                 key={anime.id}
                 id={anime.id}
                 selectAnime={() => {
+                  send({
+                    type: 'TOGGLE_ANIME',
+                    anime
+                  })
                   setSelectedAnime((currentAnime) => {
                     if (!!currentAnime && currentAnime.id === anime.id) return null;
     

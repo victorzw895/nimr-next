@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { getAnimeWatchList } from '@/lib/api';
+import { getAnimeWatchList, getWatchListCount } from '@/lib/api';
 import { useWatchListDispatch } from "@/context/WatchListContext";
 import List from './List';
 
@@ -9,8 +9,13 @@ const RankedList: FC = () => {
 
   useEffect(() => {
     (async () => {
-      const animeWatchList = await getAnimeWatchList();
-      setAnimeWatchList(animeWatchList)
+      const watchList = await getAnimeWatchList();
+      setAnimeWatchList(watchList)
+
+      const watchListCount = await getWatchListCount()
+      if (watchList.length === watchListCount) {
+        setHasMore(false);
+      }
     })()
   }, [])
 

@@ -5,6 +5,7 @@ import { SelectedAnimeProvider } from '@/context/SelectedAnimeContext';
 import { AnimeListProvider } from '@/context/AnimeListContext';
 import { RankedListProvider } from '@/context/RankedListContext';
 import { WatchListProvider } from '@/context/WatchListContext';
+import { PreviewProvider } from '@/context/PreviewMachine';
 import Layout from '@/layout/Layout';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -18,7 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
               rankedAnimeList: pageProps.rankedAnimeList
             }}>
               <WatchListProvider>
-                <Component {...pageProps} />
+                <PreviewProvider>
+                  <Component {...pageProps} />
+                </PreviewProvider>
               </WatchListProvider>
             </RankedListProvider>
           </AnimeListProvider>

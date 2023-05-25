@@ -1,11 +1,20 @@
-import { FC, useState } from "react";
-import { getAnimeRankedList } from '@/lib/api';
+import { FC, useState, useEffect } from "react";
+import { getAnimeRankedList, getRankedListCount } from '@/lib/api';
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import List from './List';
 
 const RankedList: FC = () => {
   const [ hasMore, setHasMore ] = useState(true);
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
+  
+  useEffect(() => {
+    (async () => {
+      const rankedListCount = await getRankedListCount()
+      if (animeRankedList.length === rankedListCount) {
+        setHasMore(false);
+      }
+    })()
+  }, [])
 
   const loadMore = async () => {
     const nextAnimeIndex = animeRankedList.length;

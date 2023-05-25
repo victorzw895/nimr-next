@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { Inter } from 'next/font/google'
 import AllList from '@/components/AllList';
@@ -7,12 +7,18 @@ import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import InterestList from '@/components/InterestList';
 import Preview from '@/components/Preview';
 import { Anime } from '@/types/Anime'
+import { useActor } from '@/context/PreviewMachine';
 
 const inter = Inter({ subsets: ['latin'] })
 
 const Home = ({seasonYears}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const [ state, send ] = useActor();
   const { selectedAnime } = useSelectedAnimeDispatch();
   const [ collapsed, setCollapsed ] = useState<Record<string, boolean>>(seasonYears.reduce((prev, current) => ({...prev, [current.toString()]: false}), {}));
+
+  useEffect(() => {
+    console.log('state use effect', state.value)
+  }, [state.value])
 
   const toggleCollapse = (year: number) => {
     const yearString = year.toString();

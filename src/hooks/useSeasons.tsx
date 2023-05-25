@@ -1,11 +1,9 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-// import { setAnimeList } from '../App';
+import { Dispatch, SetStateAction } from 'react';
 import {
   fetchAnimes,
   upsertAnime,
-  getSeasonYears,
 } from '@/lib/api';
-import { Anime, AnimesByYear } from '@/types/Anime';
+import { Anime } from '@/types/Anime';
 import moment from 'moment';
 import { useAppDispatch } from '@/context/AppContext';
 import { useAnimeListDispatch } from '@/context/AnimeListContext';

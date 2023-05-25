@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import moment from 'moment';
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import Image from "next/image";
@@ -7,6 +7,7 @@ import { useSelectedAnimeDispatch } from "@/context/SelectedAnimeContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
+import { useActor } from "@/context/PreviewMachine";
 import {
   upsertAnime,
   getRankedListCount,
@@ -18,6 +19,7 @@ interface PreviewProps {
 }
 
 const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
+  const [ state, send ] = useActor();
   const { setFocusAnimeId } = useAppDispatch();
   const { selectedAnime, setSelectedAnime } = useSelectedAnimeDispatch();
   const { animeList, setAnimeList } = useAnimeListDispatch();
@@ -25,6 +27,8 @@ const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
   const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
 
   const handleNextAnime = () => {
+    send('NEXT_ANIME')
+
     if (!selectedAnime) return;
     const currentSeason = selectedAnime.seasonYear;
     const nextAnimeIndex = animeList[currentSeason.toString()].findIndex(anime => anime.id === selectedAnime.id) + 1;

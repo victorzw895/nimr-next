@@ -1,7 +1,12 @@
 import { createContext, useContext, useState, FC, ReactNode, Dispatch, SetStateAction, useEffect } from "react";
-import { Anime, AnimesByYear } from '@/types/Anime';
+import { Anime } from '@/types/Anime';
 
-const DummyDB = [];
+interface DummyDBWatchType {
+  data: Anime[],
+  count: number
+}
+
+export const DummyDBWatch: DummyDBWatchType = { data: [], count: 0 };
 
 interface WatchListContextProps {
   animeWatchList: Anime[]
