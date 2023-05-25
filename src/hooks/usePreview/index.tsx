@@ -4,7 +4,9 @@ import { usePreviewDispatch, PreviewProvider as PreviewContextProvider} from "@/
 import { useActor, PreviewProvider as PreviewMachineProvider } from "@/xstate-machine/PreviewMachine";
 import { Anime } from '@/types/Anime';
 
-const useXState = process.env.NEXT_PUBLIC_XSTATE
+const useXState = process.env.NEXT_PUBLIC_XSTATE;
+
+console.info(`Preview State Management Option: ${useXState ? 'XState Machine' : 'React Context'}`)
 
 const usePreview = useXState ? usePreviewMachine : usePreviewHook
 
