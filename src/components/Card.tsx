@@ -31,7 +31,7 @@ const Card: FunctionComponent<CardProps> = (props) => {
       {
         props.poster ?
           <Image
-            className='max-h-16 m-2 flex-grow-0'
+            className='h-18 m-2 flex-grow-0'
             src={props.poster}
             height={64}
             width={45}

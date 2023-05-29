@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, FC, ReactNode, Dispatch, SetStateAction, useEffect } from "react";
-import { Anime, AnimesByYear } from '@/types/Anime';
+import { Anime } from '@/types/Anime';
 
 interface DummyDBRankedType {
   data: Anime[],
