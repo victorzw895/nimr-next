@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { getAnimeWatchList, getWatchListCount } from '@/lib/api';
+import { getAnimeWatchList, getWatchListCount, upsertAnime } from '@/lib/api';
 import { useWatchListDispatch } from "@/context/WatchListContext";
 import List from './List';
 
@@ -42,6 +42,7 @@ const RankedList: FC = () => {
         setList={setAnimeWatchList}
         loadMore={loadMore}
         hasMore={hasMore}
+        updateDb={upsertAnime}
       />
     </div>
   )

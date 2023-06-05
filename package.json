@@ -7,12 +7,15 @@
     "dev-xstate": "NEXT_PUBLIC_XSTATE=true next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
     "@dnd-kit/utilities": "^3.2.1",
+    "@storybook/addon-styling": "^1.0.8",
     "@supabase/supabase-js": "^2.12.1",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@types/node": "18.15.5",
@@ -34,5 +37,18 @@
     "tailwindcss": "3.2.7",
     "typescript": "5.0.2",
     "xstate": "^4.37.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.18",
+    "@storybook/addon-interactions": "^7.0.18",
+    "@storybook/addon-links": "^7.0.18",
+    "@storybook/blocks": "^7.0.18",
+    "@storybook/nextjs": "^7.0.18",
+    "@storybook/react": "^7.0.18",
+    "@storybook/testing-library": "^0.0.14-next.2",
+    "eslint-plugin-storybook": "^0.6.12",
+    "storybook": "^7.0.18",
+    "storybook-react-context": "^0.6.0",
+    "tsconfig-paths-webpack-plugin": "^4.0.1"
   }
 }

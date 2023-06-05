@@ -10,6 +10,7 @@ interface BaseListProps {
   sortable?: boolean,
   showRank?: boolean,
   lazyScroll?: boolean,
+  updateDb?: (anime: Anime | Anime[]) => Promise<Anime[] | null>
 }
 
 interface ConditionalWrapperProps<TWrapperProps> {
@@ -39,12 +40,13 @@ const List: ListProps = ({
   sortable = false,
   showRank = false,
   lazyScroll = true,
+  updateDb = null,
   ...restProps
 }) => {
   const { setSelectedAnime } = useSelectedAnime();
 
   return (
-    <SortableWrapper condition={sortable} list={list} {...restProps} >
+    <SortableWrapper condition={sortable} list={list} updateDb={updateDb} {...restProps} >
       <LazyScrollWrapper
         condition={lazyScroll}
         list={list}
@@ -58,19 +60,10 @@ const List: ListProps = ({
                 id={anime.id}
                 selectAnime={() => {
                   setSelectedAnime('TOGGLE_ANIME', anime);
-                  // send({
-                  //   type: 'TOGGLE_ANIME',
-                  //   anime
-                  // })
-                  // setSelectedAnime((currentAnime) => {
-                  //   if (!!currentAnime && currentAnime.id === anime.id) return null;
-    
-                  //   return anime;
-                  // })
                 }}
-                japName={anime.attributes.titles.en_jp} 
-                engName={anime.attributes.titles.en}
-                poster={anime.attributes.posterImage?.tiny}
+                japName={anime.attributes.titles.en_jp || ''} 
+                engName={anime.attributes.titles.en || ''}
+                poster={anime.attributes.posterImage?.tiny || ''}
                 rank={showRank ? anime.rank : null}
                 stars={showRank ? anime.stars : null}
               />

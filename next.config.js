@@ -6,6 +6,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'media.kitsu.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
       }
     ]
   },

@@ -26,6 +26,8 @@ module.exports = {
   },
   daisyui: {
     // styled: false,
+    base: false,
+    // prefix: 'daisy',
     themes: [
       {
         mytheme: {

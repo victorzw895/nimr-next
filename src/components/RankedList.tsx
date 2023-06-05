@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { getAnimeRankedList, getRankedListCount } from '@/lib/api';
+import { getAnimeRankedList, getRankedListCount, upsertAnime } from '@/lib/api';
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import List from './List';
 
@@ -14,7 +14,7 @@ const RankedList: FC = () => {
         setHasMore(false);
       }
     })()
-  }, [])
+  }, []);
 
   const loadMore = async () => {
     const nextAnimeIndex = animeRankedList.length;
@@ -27,7 +27,7 @@ const RankedList: FC = () => {
     else {
       setHasMore(false);
     }
-  }
+  };
 
   return (
     <div id='ranked-list' className='list space-y-1 max-h-[37rem] overflow-y-scroll scrollbar-hide bg-light rounded-b-lg min-h-[38rem] pb-4'>
@@ -39,6 +39,7 @@ const RankedList: FC = () => {
         setList={setAnimeRankedList}
         loadMore={loadMore}
         hasMore={hasMore}
+        updateDb={upsertAnime}
       />
     </div>
   )

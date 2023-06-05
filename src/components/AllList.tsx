@@ -4,6 +4,7 @@ import { useAppDispatch } from "@/context/AppContext";
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { getAnimesByYear } from '@/lib/api';
 import { getAnimeList } from '@/lib/api';
+import { upsertAnime } from '@/lib/api';
 import List from './List';
 
 interface AllListProps {
@@ -86,6 +87,7 @@ const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
                   scrollableTarget={`main-list-${year}`}
                   loadMore={() => fetchFromApi ? getMoreAnime(setHasMore) : loadMore(year)}
                   hasMore={hasMore[year.toString()]}
+                  updateDb={upsertAnime}
                 />
                 </div>
               </div>

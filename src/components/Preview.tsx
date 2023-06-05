@@ -22,7 +22,7 @@ const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
   return (
     selectedAnime && selectedAnime.attributes ?
       <>
-        <section className='flex flex-col justify-between col-span-2 self-center h-[37rem]'>
+        <section className='bg-darkest rounded-md p-2 py-4 flex flex-col justify-between col-span-2 self-center h-[37rem] '>
           <div className='relative flex items-center mx-1'>
             {
               selectedAnime.attributes.posterImage?.small ?

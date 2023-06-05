@@ -1,4 +1,3 @@
-import { upsertAnime } from '@/lib/api';
 import { ReactNode, FC, useState, Dispatch, SetStateAction } from 'react';
 import { DndContext, closestCenter, DragEndEvent, Active, useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -33,10 +32,11 @@ export const SortableItem: FC<SortableItemProps> = (props) => {
 export interface SortableListProps {
   children: ReactNode,
   list: any[],
-  setList: Dispatch<SetStateAction<any[]>>
+  setList: Dispatch<SetStateAction<any[]>>,
+  updateDb: ((anime: Anime | Anime[]) => Promise<Anime[] | null>) | null
 }
 
-export const SortableList: FC<SortableListProps> = ({children, list, setList}) => {
+export const SortableList: FC<SortableListProps> = ({children, list, setList, updateDb}) => {
   const [activeItem, setActiveItem] = useState<Anime | null>(null);
 
   const ids = () => list.map(item => item.id);
@@ -99,8 +99,9 @@ export const SortableList: FC<SortableListProps> = ({children, list, setList}) =
           }
         })
         
-        upsertAnime(changedValues)
-        // updateDb(changedValues)
+        if (updateDb !== null) {
+          updateDb(changedValues)
+        }
         setList((_) => updatedItemRanks);
       }
     }

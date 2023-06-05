@@ -10,10 +10,12 @@ const PreviewContext = createContext<PreviewContextProps | undefined>(undefined)
 
 interface PreviewProviderProps {
   children: ReactNode,
+  storybookState?: [Anime | null, Dispatch<SetStateAction<Anime | null>>]
 }
 
-const PreviewProvider: FC<PreviewProviderProps> = ({ children }) => {
-  const [selectedAnime, setSelectedAnime] = useState<Anime | null>(null);
+const PreviewProvider: FC<PreviewProviderProps> = ({ children, storybookState }) => {
+  const previewState = useState<Anime | null>(null);
+  const [selectedAnime, setSelectedAnime] = storybookState ? storybookState : previewState;
 
   return (
     <PreviewContext.Provider value={

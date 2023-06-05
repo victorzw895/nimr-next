@@ -1,11 +1,11 @@
 
 type ImageSizes = 'original' | 'tiny' | 'small' | 'medium' | 'large'
-interface Images extends Record<ImageSizes, string> {
+interface Images extends Partial<Record<ImageSizes, string>> {
     meta: {
-        dimensions: Record<ImageSizes, {
+        dimensions: Partial<Record<ImageSizes, {
             width: number,
             height: number
-        }>
+        }>>
     }
 }
 
@@ -18,7 +18,7 @@ export interface Anime {
         'synopsis': string,
         'description': string,
         'coverImageTopOffset': number,
-        'titles': Record<'en' | 'en_jp' | 'ja_jp', string>,
+        'titles': Partial<Record<'en' | 'en_jp' | 'ja_jp' | 'en_us', string>>,
         'canonicalTitle': string,
         'abbreviatedTitles': string[],
         'averageRating': string,
