@@ -1,6 +1,6 @@
 import { FunctionComponent, useRef, useEffect } from "react";
 import Image from "next/image";
-import { useAppDispatch } from "@/context/AppContext";
+import useAnime from '@/hooks/useAnime';
 
 export interface CardProps {
   id: number,
@@ -14,7 +14,7 @@ export interface CardProps {
 
 const Card: FunctionComponent<CardProps> = (props) => {
   const cardRef = useRef<HTMLDivElement | null>(null)
-  const { focusAnimeId } = useAppDispatch();
+  const { focusAnimeId } = useAnime();
 
   useEffect(() => {
     if (!cardRef.current) return;

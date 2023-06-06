@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/context/AppContext";
+import useAnime from '@/hooks/useAnime';
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
@@ -12,7 +12,7 @@ import {
 const usePreview = (toggleCollapse: (year: number) => void) => {
   const [ state, send ] = useActor();
   const { selectedAnime } = state.context;
-  const { setFocusAnimeId } = useAppDispatch();
+  const { setFocusAnimeId } = useAnime();
   const { animeList, setAnimeList } = useAnimeListDispatch();
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
   const { animeWatchList, setAnimeWatchList } = useWatchListDispatch();
