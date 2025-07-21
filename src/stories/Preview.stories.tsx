@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import AppDecorator from 'decorator/AppDecorator';
 import AnimeListDecorator from 'decorator/AnimeListDecorator';
 import RankedListDecorator from 'decorator/RankedListDecorator';

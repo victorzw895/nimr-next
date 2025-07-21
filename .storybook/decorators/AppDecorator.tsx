@@ -1,5 +1,5 @@
 import { AppProvider } from '@/context/AppContext';
-import { Decorator } from '@storybook/react';
+import { Decorator } from '@storybook/nextjs';
 import React, { useState } from 'react';
 
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import PreviewDecorator from 'decorator/PreviewDecorator';
 import AppDecorator from 'decorator/AppDecorator';
 import List from '@/components/List';

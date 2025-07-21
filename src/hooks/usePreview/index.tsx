@@ -1,7 +1,7 @@
 import usePreviewHook from "./usePreviewContext";
 import usePreviewMachine from "./usePreviewMachine";
 import { usePreviewDispatch } from "@/context/PreviewContext";
-import { useActor } from "@/xstate-machine/PreviewMachine";
+import { useActorRef, useSelector } from "@/xstate-machine/PreviewMachine";
 import { Anime } from '@/types/Anime';
 
 const useXState = process.env.NEXT_PUBLIC_XSTATE;
@@ -32,8 +32,8 @@ const useSelectedAnimeHook = () => {
 }
 
 const useSelectedAnimeMachine = () => {
-  const [ state, send ] = useActor();
-  const { selectedAnime } = state.context
+  const actorRef = useActorRef();
+  const selectedAnime = useSelector((state) => state.context.selectedAnime);
 
   const setSelectedAnime = (action: string, anime: Anime) => {
     let params: any
@@ -46,7 +46,7 @@ const useSelectedAnimeMachine = () => {
         }
     }
 
-    send(params)
+    actorRef.send(params)
   };
 
   return {selectedAnime, setSelectedAnime}
