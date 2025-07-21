@@ -24,7 +24,7 @@ const Home = ({seasonYears}: InferGetStaticPropsType<typeof getStaticProps>) => 
   }
 
   return (
-    <main className={`grid ${!!selectedAnime ? 'grid-cols-4' : 'grid-cols-2'} gap-6 items-stretch h-full mx-6 ${inter.className}`}>
+    <main className={`grid ${!!selectedAnime ? 'grid-cols-4' : 'grid-cols-2'} gap-6 items-stretch h-full mx-6 ${inter.className} mb-6`}>
       <AllList collapsed={collapsed} toggleCollapse={toggleCollapse} />
       {!!selectedAnime && 
         <Preview toggleCollapse={toggleCollapse} />

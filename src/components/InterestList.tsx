@@ -6,7 +6,7 @@ const InterestList: FC = () => {
   const [ showWatchList, setShowWatchList ] = useState(false);
 
   return (
-    <section className='col-span-1 bg-darkest rounded shadow-lg shadow-darkest'>
+    <section className='card bg-neutral text-neutral-content'>
       <div className='box-border pt-3 px-3 h-full'>
         <div className='tabs'>
           <button key='ranked' className={`tab tab-lifted font-bold ${!showWatchList ? 'tab-active' : ''}`} onClick={() => setShowWatchList(false)}>Ranked</button>

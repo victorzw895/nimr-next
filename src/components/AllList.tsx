@@ -67,13 +67,13 @@ const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
   }
 
   return (
-    <section className='col-span-1 bg-darkest rounded shadow-lg shadow-darkest'>
+    <section className='card bg-neutral text-neutral-content'>
       <div className='box-border pt-3 px-3 h-full'>
         <div className='tabs'>
           <button className={`tab tab-lifted font-bold ${showAll ? 'tab-active' : ''}`} onClick={() => setShowAll(true)}>All</button>
           <button className={`tab tab-lifted font-bold ${!showAll ? 'tab-active' : ''}`} onClick={() => setShowAll(false)}>Unwatched</button>
         </div>
-        <div className='space-y-1 max-h-148 overflow-y-auto scrollbar-hide bg-light rounded-b-lg min-h-128'>
+        <div className='space-y-1 max-h-148 overflow-y-auto scrollbar-hide bg-light rounded-b-lg'>
           {seasonYears.map(year => {
             return (
               <div key={year} className='collapse collapse-arrow bg-dark items-center'>

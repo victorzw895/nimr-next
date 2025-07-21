@@ -1,11 +1,12 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: caramellatte --default, dark --prefersdark, coffee;
+}
 
 #__next {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #2C3333;
 }
 
 body {
@@ -13,5 +14,5 @@ body {
 }
 
 .collapse:not(.collapse-close) input[type="checkbox"]:checked ~ .list.collapse-content {
-  max-height: 28rem;
+  /* max-height: 28rem; */
 }
