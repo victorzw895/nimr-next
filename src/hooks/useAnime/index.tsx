@@ -1,16 +1,20 @@
 import { useAppDispatch } from "@/context/AppContext";
 import useAnimeStore from "@/zustand-store/AnimeStore";
 
-const useXState = process.env.NEXT_PUBLIC_XSTATE;
+// const useXState = process.env.NEXT_PUBLIC_XSTATE;
 const useZustand = process.env.NEXT_PUBLIC_ZUSTAND;
 
 // console.info(`Preview State Management Option: ${useXState ? 'XState Machine' : 'React Context'}`)
 
-// const usePreview = useXState ? usePreviewMachine : usePreviewHook
-
-const useAnime = () => {
+const useAnimeContext = () => {
   const reactContextState = useAppDispatch();
+  return {
+    focusAnimeId: reactContextState.focusAnimeId,
+    setFocusAnimeId: reactContextState.setFocusAnimeId,
+  }
+}
 
+const useAnimeZustand = () => {
   const zustandState = useAnimeStore(({focusAnimeId, setFocusAnimeId}) => 
     (
       {
@@ -19,18 +23,13 @@ const useAnime = () => {
       }
     )
   )
-
-  const focusAnimeId = useZustand ?
-    zustandState.focusAnimeId :
-    reactContextState.focusAnimeId;
-  const setFocusAnimeId = useZustand ?
-    zustandState.setFocusAnimeId :
-    reactContextState.setFocusAnimeId;
-
   return {
-    focusAnimeId,
-    setFocusAnimeId,
+    focusAnimeId: zustandState.focusAnimeId,
+    setFocusAnimeId: zustandState.setFocusAnimeId,
   }
 }
+
+const useAnime = useZustand ? useAnimeZustand : useAnimeContext;
+
 
 export default useAnime;

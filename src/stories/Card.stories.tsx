@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import AppDecorator from 'decorator/AppDecorator';
 // import { AppContext } from '@/context/AppContext';
 // import { withReactContext } from 'storybook-react-context'

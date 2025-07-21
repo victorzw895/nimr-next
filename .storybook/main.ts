@@ -5,10 +5,8 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@storybook/addon-interactions",
-    "@storybook/addon-styling",
     "storybook-react-context",
+    "@storybook/addon-docs"
   ],
   framework: {
     name: "@storybook/nextjs",
@@ -18,9 +16,6 @@ const config: StorybookConfig = {
     if (!config.resolve) return config;
     config.resolve.plugins = [new TsconfigPathsPlugin({ extensions: config.resolve.extensions })]
     return config
-  },
-  docs: {
-    autodocs: "tag",
   },
 };
 export default config;
