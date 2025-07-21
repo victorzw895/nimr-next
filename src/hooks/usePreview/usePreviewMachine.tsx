@@ -2,7 +2,7 @@ import useAnime from '@/hooks/useAnime';
 import { useAnimeListDispatch } from "@/context/AnimeListContext";
 import { useRankedListDispatch } from "@/context/RankedListContext";
 import { useWatchListDispatch } from "@/context/WatchListContext";
-import { useActor } from "@/xstate-machine/PreviewMachine";
+import { useActorRef, useSelector } from "@/xstate-machine/PreviewMachine";
 import {
   upsertAnime,
   getRankedListCount,
@@ -10,8 +10,8 @@ import {
 } from '@/lib/api';
 
 const usePreview = (toggleCollapse: (year: number) => void) => {
-  const [ state, send ] = useActor();
-  const { selectedAnime } = state.context;
+  const actorRef = useActorRef();
+  const selectedAnime = useSelector((state) => state.context.selectedAnime);
   const { setFocusAnimeId } = useAnime();
   const { animeList, setAnimeList } = useAnimeListDispatch();
   const { animeRankedList, setAnimeRankedList } = useRankedListDispatch();
@@ -34,7 +34,7 @@ const usePreview = (toggleCollapse: (year: number) => void) => {
     
     if (!nextAnime) return;
 
-    send({type: 'NEXT_ANIME', anime: nextAnime})
+    actorRef.send({type: 'NEXT_ANIME', anime: nextAnime})
   }
 
   const toggleAnimeWatched = async () => {
@@ -79,10 +79,10 @@ const usePreview = (toggleCollapse: (year: number) => void) => {
       setFocusAnimeId(upsertedAnime.id)
       const nextAnimeIndex = animeList[currentSeasonString].findIndex(anime => anime.id === selectedAnime.id) + 1;
       if (nextAnimeIndex < animeList[currentSeasonString].length) {
-        send({type: 'TOGGLE_RANKED', anime: animeList[currentSeasonString][nextAnimeIndex]})
+        actorRef.send({type: 'TOGGLE_RANKED', anime: animeList[currentSeasonString][nextAnimeIndex]})
       }
       else if ((currentSeason + 1).toString() in animeList) {
-        send({type: 'TOGGLE_RANKED', anime: animeList[currentSeasonString][nextAnimeIndex]})
+        actorRef.send({type: 'TOGGLE_RANKED', anime: animeList[currentSeasonString][nextAnimeIndex]})
       }
 
       updatedRankedList = [...animeRankedList, upsertedAnime]
@@ -155,7 +155,7 @@ const usePreview = (toggleCollapse: (year: number) => void) => {
         .map((anime, index) => ({...anime, rank: index + 1}))
     }
 
-    send({type: 'TOGGLE_WATCHLIST', anime: upsertedAnime})
+    actorRef.send({type: 'TOGGLE_WATCHLIST', anime: upsertedAnime})
     setAnimeList(prev => ({
       ...prev,
       [currentSeasonString]: updatedCurrentSeasonAnimeList.map(anime => {

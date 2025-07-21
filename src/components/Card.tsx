@@ -31,7 +31,7 @@ const Card: FunctionComponent<CardProps> = (props) => {
       {
         props.poster ?
           <Image
-            className='h-18 m-2 flex-grow-0'
+            className='h-18 m-2 grow-0'
             src={props.poster}
             height={64}
             width={45}
@@ -45,7 +45,7 @@ const Card: FunctionComponent<CardProps> = (props) => {
         <p data-testid='eng-name' className='text-xs truncate'>{props.engName}</p>
       </div>
       {!!props.rank &&
-        <div className='ml-auto mr-3 flex-grow-0'>
+        <div className='ml-auto mr-3 grow-0'>
           <p data-testid='rank' className='text-3xl'>{props.rank}</p>
           <p data-testid='stars' className='text-xs'>{props.stars ? props.stars : 0}</p>
         </div> 

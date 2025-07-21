@@ -1,6 +1,6 @@
 import { AnimeListProvider } from '@/context/AnimeListContext';
 import { Anime } from '@/types/Anime';
-import { Decorator } from '@storybook/react';
+import { Decorator } from '@storybook/nextjs';
 import React, { useState } from 'react';
 
 const AnimeListDecorator: Decorator = (Story, context) => {

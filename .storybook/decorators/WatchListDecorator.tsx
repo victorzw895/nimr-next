@@ -1,6 +1,6 @@
 import { WatchListProvider } from '@/context/WatchListContext';
 import { Anime } from '@/types/Anime';
-import { Decorator } from '@storybook/react';
+import { Decorator } from '@storybook/nextjs';
 import React, { useState } from 'react';
 
 const WatchListDecorator: Decorator = (Story, context) => {

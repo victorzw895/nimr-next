@@ -1,6 +1,6 @@
 import { PreviewProvider } from '@/context/PreviewContext';
 import { Anime } from '@/types/Anime';
-import { Decorator } from '@storybook/react';
+import { Decorator } from '@storybook/nextjs';
 import React, { useState } from 'react';
 
 const fakeAnime = {

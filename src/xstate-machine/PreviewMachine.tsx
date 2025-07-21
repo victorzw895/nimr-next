@@ -6,7 +6,7 @@ export const previewMachine = createMachine(
   {
     id: "preview",
     initial: "previewOff",
-    schema: {
+    types: {
       context: {} as { selectedAnime: Anime | null },
       events: {} as { type: 'NEXT_ANIME'; anime: Anime } | { type: 'TOGGLE_ANIME'; anime: Anime | null } | { type: 'TOGGLE_RANKED'; anime: Anime } | { type: 'TOGGLE_WATCHLIST'; anime: Anime },
     },
@@ -36,12 +36,12 @@ export const previewMachine = createMachine(
           TOGGLE_ANIME: 
           [
             {
-              cond: 'sameAnime',
+              guard: 'sameAnime',
               actions: "togglePreview",
               target: "previewOff",
             },
             {
-              cond: 'nextAnime',
+              guard: 'nextAnime',
               actions: "selectAnime",
             },
           ],
@@ -51,23 +51,24 @@ export const previewMachine = createMachine(
   },
   {
     guards: {
-      sameAnime: (context, event) => context.selectedAnime === event.anime,
-      nextAnime: (context, event) => context.selectedAnime !== event.anime,
+      sameAnime: ({ context, event }) => context.selectedAnime === event.anime,
+      nextAnime: ({ context, event }) => context.selectedAnime !== event.anime,
     },
     actions: {
       togglePreview: assign({
-        selectedAnime: (context, event) => context.selectedAnime ? null : event.anime
+        selectedAnime: ({ context, event }) => context.selectedAnime ? null : event.anime
       }),
       selectAnime: assign({
-        selectedAnime: (_, event) => event.anime
+        selectedAnime: ({ event }) => event.anime
       })
     },
   }
 );
 
-const { useActor, Provider } = createActorContext(previewMachine);
+const { useActorRef, useSelector, Provider } = createActorContext(previewMachine);
 
 export {
-  useActor,
+  useActorRef,
+  useSelector,
   Provider as PreviewProvider
 }
