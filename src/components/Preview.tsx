@@ -22,7 +22,7 @@ const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
   return (
     selectedAnime && selectedAnime.attributes ?
       <>
-        <section className='bg-darkest rounded-md p-2 py-4 flex flex-col justify-between col-span-2 self-center h-[37rem] '>
+        <section className='bg-darkest rounded-md p-2 py-4 flex flex-col justify-between col-span-2 self-center h-148 '>
           <div className='relative flex items-center mx-1'>
             {
               selectedAnime.attributes.posterImage?.small ?
@@ -45,7 +45,7 @@ const Preview: FC<PreviewProps> = ({ toggleCollapse }) => {
               <p className='text-xs'>Release Date: {moment(selectedAnime.attributes.startDate).format('YYYY')}</p>
             </div>
           </div>
-          <div className='ml-2 min-h-[10rem]'>
+          <div className='ml-2 min-h-40'>
             <p>Description</p>
             <p data-testid='description' className='text-xs line-clamp-8'>{selectedAnime.attributes.description}</p>
           </div>

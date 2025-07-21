@@ -73,7 +73,7 @@ const AllList: FC<AllListProps> = ({ collapsed, toggleCollapse }) => {
           <button className={`tab tab-lifted font-bold ${showAll ? 'tab-active' : ''}`} onClick={() => setShowAll(true)}>All</button>
           <button className={`tab tab-lifted font-bold ${!showAll ? 'tab-active' : ''}`} onClick={() => setShowAll(false)}>Unwatched</button>
         </div>
-        <div className='space-y-1 max-h-[37rem] overflow-y-auto scrollbar-hide bg-light rounded-b-lg min-h-[32rem]'>
+        <div className='space-y-1 max-h-148 overflow-y-auto scrollbar-hide bg-light rounded-b-lg min-h-128'>
           {seasonYears.map(year => {
             return (
               <div key={year} className='collapse collapse-arrow bg-dark items-center'>

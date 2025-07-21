@@ -46,7 +46,7 @@ const meta: Meta<typeof List> = {
     AppDecorator,
     PreviewDecorator,
     (Story) => (
-      <div id='scrollable-list' className='list space-y-1 max-h-[37rem] overflow-y-scroll scrollbar-hide bg-light rounded-b-lg min-h-[38rem] pb-4'>
+      <div id='scrollable-list' className='list space-y-1 max-h-148 overflow-y-scroll scrollbar-hide bg-light rounded-b-lg min-h-152 pb-4'>
         <Story />
       </div>
     )
